@@ -1,0 +1,8 @@
+prefix=/home/neil/catkin_ws/install
+
+Name: algo
+Description: Description of algo
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

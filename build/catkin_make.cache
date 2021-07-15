@@ -1,0 +1,2 @@
+algo:cam:core
+-DCATKIN_DEVEL_PREFIX=/home/neil/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/neil/catkin_ws/install -G Unix Makefiles
