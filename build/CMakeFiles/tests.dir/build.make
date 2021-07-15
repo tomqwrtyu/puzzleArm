@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/neil/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/neil/puzzleArm/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/neil/catkin_ws/build
+CMAKE_BINARY_DIR = /home/neil/puzzleArm/build
 
 # Utility rule file for tests.
 
@@ -67,6 +67,6 @@ CMakeFiles/tests.dir/clean:
 .PHONY : CMakeFiles/tests.dir/clean
 
 CMakeFiles/tests.dir/depend:
-	cd /home/neil/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/catkin_ws/src /home/neil/catkin_ws/src /home/neil/catkin_ws/build /home/neil/catkin_ws/build /home/neil/catkin_ws/build/CMakeFiles/tests.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/neil/puzzleArm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/puzzleArm/src /home/neil/puzzleArm/src /home/neil/puzzleArm/build /home/neil/puzzleArm/build /home/neil/puzzleArm/build/CMakeFiles/tests.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/tests.dir/depend
 

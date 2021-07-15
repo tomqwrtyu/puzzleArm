@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/neil/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/neil/puzzleArm/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/neil/catkin_ws/build
+CMAKE_BINARY_DIR = /home/neil/puzzleArm/build
 
 # Utility rule file for geometry_msgs_generate_messages_lisp.
 
@@ -63,10 +63,10 @@ cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build: geometry_msgs_gen
 .PHONY : cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
 
 cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/clean:
-	cd /home/neil/catkin_ws/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/geometry_msgs_generate_messages_lisp.dir/cmake_clean.cmake
+	cd /home/neil/puzzleArm/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/geometry_msgs_generate_messages_lisp.dir/cmake_clean.cmake
 .PHONY : cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/clean
 
 cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/depend:
-	cd /home/neil/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/catkin_ws/src /home/neil/catkin_ws/src/cam /home/neil/catkin_ws/build /home/neil/catkin_ws/build/cam /home/neil/catkin_ws/build/cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/neil/puzzleArm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/puzzleArm/src /home/neil/puzzleArm/src/cam /home/neil/puzzleArm/build /home/neil/puzzleArm/build/cam /home/neil/puzzleArm/build/cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : cam/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/depend
 

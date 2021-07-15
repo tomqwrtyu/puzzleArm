@@ -1,4 +1,4 @@
-prefix=/home/neil/catkin_ws/install
+prefix=/home/neil/puzzleArm/install
 
 Name: cam
 Description: Description of cam

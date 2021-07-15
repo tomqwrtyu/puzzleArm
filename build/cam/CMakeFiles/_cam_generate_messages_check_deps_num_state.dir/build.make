@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/neil/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/neil/puzzleArm/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/neil/catkin_ws/build
+CMAKE_BINARY_DIR = /home/neil/puzzleArm/build
 
 # Utility rule file for _cam_generate_messages_check_deps_num_state.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/neil/catkin_ws/build
 include cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/progress.make
 
 cam/CMakeFiles/_cam_generate_messages_check_deps_num_state:
-	cd /home/neil/catkin_ws/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py cam /home/neil/catkin_ws/src/cam/srv/num_state.srv 
+	cd /home/neil/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py cam /home/neil/puzzleArm/src/cam/srv/num_state.srv 
 
 _cam_generate_messages_check_deps_num_state: cam/CMakeFiles/_cam_generate_messages_check_deps_num_state
 _cam_generate_messages_check_deps_num_state: cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/build.make
@@ -67,10 +67,10 @@ cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/build: _cam_gener
 .PHONY : cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/build
 
 cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/clean:
-	cd /home/neil/catkin_ws/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/cmake_clean.cmake
+	cd /home/neil/puzzleArm/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/cmake_clean.cmake
 .PHONY : cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/clean
 
 cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/depend:
-	cd /home/neil/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/catkin_ws/src /home/neil/catkin_ws/src/cam /home/neil/catkin_ws/build /home/neil/catkin_ws/build/cam /home/neil/catkin_ws/build/cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/neil/puzzleArm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/puzzleArm/src /home/neil/puzzleArm/src/cam /home/neil/puzzleArm/build /home/neil/puzzleArm/build/cam /home/neil/puzzleArm/build/cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : cam/CMakeFiles/_cam_generate_messages_check_deps_num_state.dir/depend
 

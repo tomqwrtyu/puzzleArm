@@ -28,7 +28,6 @@ from enum import Enum
 
 import cv2
 import rospy
-import pyrealsense2.pyrealsense2 as rs
 import numpy as np
 from openvino.inference_engine import IECore
 
@@ -257,12 +256,6 @@ def await_requests_completion(requests):
         request.wait() 
 
 
-def rs_isOpened(pipeline):
-    frames = pipeline.wait_for_frames()
-    color_frame = frames.get_color_frame()
-    #depth_frame = frames.get_depth_frame()
-    return 0 if not color_frame else 1
-
 
 def pos_dtm(shape, x, y): #up left for 1,up mid for 2,up right for 3
                            #left for 4,mid for 5,right for 6
@@ -370,21 +363,9 @@ def main():
     
     mode = Mode(Modes.USER_SPECIFIED)
     
-    pipeline = rs.pipeline()
-    config = rs.config()
-    #config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-    #config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-    config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
-    config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
-    profile = pipeline.start(config)
-    depth_sensor = profile.get_device().first_depth_sensor()
-    #depth_sensor.set_option(rs.option.enable_auto_exposure, False)
-    if depth_sensor.supports(rs.option.depth_units):
-        depth_sensor.set_option(rs.option.depth_units,0.001)
-    depth_scale = depth_sensor.get_depth_scale()
-    #print("Depth Scale is: " , depth_scale)
-    align_to = rs.stream.color
-    align = rs.align(align_to)
+    #Setup camera
+    cam = cv2.VideoCapture(3)
+
 
     wait_key_time = 1
 
@@ -417,14 +398,12 @@ def main():
         #(round(cap.get(cv2.CAP_PROP_FRAME_WIDTH) / 4), round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) / 8)))
             
     
-    while (rs_isOpened(pipeline) \
+    while (not cam.isOpened() \
            or completed_request_results \
            or len(empty_requests) < len(exec_nets[mode.current].requests)) \
           and not callback_exceptions and not rospy.is_shutdown():
         if next_frame_id_to_show in completed_request_results:
             frame, output, start_time, is_same_mode = completed_request_results.pop(next_frame_id_to_show)
-            
-            lab_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
 
             next_frame_id_to_show += 1
 
@@ -484,6 +463,7 @@ def main():
                 key = cv2.waitKey(wait_key_time)
 
                 if key in {ord("q"), ord("Q"), 27}: # ESC key
+                    cv2.destoryAllWindows()
                     break
                 if key == 9: # Tab key
                     if prev_mode_active_request_count == 0:
@@ -499,12 +479,9 @@ def main():
                     presenter.handleKey(key)
                 
 
-        elif empty_requests and prev_mode_active_request_count == 0 and rs_isOpened(pipeline):
+        elif empty_requests and prev_mode_active_request_count == 0 and cam_isOpened():
             start_time = perf_counter()
-            frames = pipeline.wait_for_frames()
-            aligned_frames = align.process(frames)   
-            color_frame = aligned_frames.get_color_frame()
-            frame = np.asanyarray(color_frame.get_data())
+            ret,frame = cam.read()
 
             request = empty_requests.popleft()
 
@@ -541,7 +518,7 @@ def main():
     for exec_net in exec_nets.values():
         await_requests_completion(exec_net.requests)
         
-    pipeline.stop()
+    cam.realease()
 
 
 if __name__ == '__main__':

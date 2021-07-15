@@ -1,0 +1,8 @@
+prefix=/home/neil/puzzleArm/devel
+
+Name: core
+Description: Description of core
+Version: 0.0.0
+Cflags: -I/home/neil/puzzleArm/devel/include
+Libs: -L${prefix}/lib 
+Requires: 

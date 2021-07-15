@@ -43,28 +43,28 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/neil/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/neil/puzzleArm/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/neil/catkin_ws/build
+CMAKE_BINARY_DIR = /home/neil/puzzleArm/build
 
 # Utility rule file for cam_generate_messages_cpp.
 
 # Include the progress variables for this target.
 include cam/CMakeFiles/cam_generate_messages_cpp.dir/progress.make
 
-cam/CMakeFiles/cam_generate_messages_cpp: /home/neil/catkin_ws/devel/include/cam/num_state.h
+cam/CMakeFiles/cam_generate_messages_cpp: /home/neil/puzzleArm/devel/include/cam/num_state.h
 
 
-/home/neil/catkin_ws/devel/include/cam/num_state.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
-/home/neil/catkin_ws/devel/include/cam/num_state.h: /home/neil/catkin_ws/src/cam/srv/num_state.srv
-/home/neil/catkin_ws/devel/include/cam/num_state.h: /opt/ros/melodic/share/gencpp/msg.h.template
-/home/neil/catkin_ws/devel/include/cam/num_state.h: /opt/ros/melodic/share/gencpp/srv.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/neil/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from cam/num_state.srv"
-	cd /home/neil/catkin_ws/src/cam && /home/neil/catkin_ws/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/neil/catkin_ws/src/cam/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/neil/catkin_ws/devel/include/cam -e /opt/ros/melodic/share/gencpp/cmake/..
+/home/neil/puzzleArm/devel/include/cam/num_state.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
+/home/neil/puzzleArm/devel/include/cam/num_state.h: /home/neil/puzzleArm/src/cam/srv/num_state.srv
+/home/neil/puzzleArm/devel/include/cam/num_state.h: /opt/ros/melodic/share/gencpp/msg.h.template
+/home/neil/puzzleArm/devel/include/cam/num_state.h: /opt/ros/melodic/share/gencpp/srv.h.template
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/neil/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from cam/num_state.srv"
+	cd /home/neil/puzzleArm/src/cam && /home/neil/puzzleArm/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/neil/puzzleArm/src/cam/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/neil/puzzleArm/devel/include/cam -e /opt/ros/melodic/share/gencpp/cmake/..
 
 cam_generate_messages_cpp: cam/CMakeFiles/cam_generate_messages_cpp
-cam_generate_messages_cpp: /home/neil/catkin_ws/devel/include/cam/num_state.h
+cam_generate_messages_cpp: /home/neil/puzzleArm/devel/include/cam/num_state.h
 cam_generate_messages_cpp: cam/CMakeFiles/cam_generate_messages_cpp.dir/build.make
 
 .PHONY : cam_generate_messages_cpp
@@ -75,10 +75,10 @@ cam/CMakeFiles/cam_generate_messages_cpp.dir/build: cam_generate_messages_cpp
 .PHONY : cam/CMakeFiles/cam_generate_messages_cpp.dir/build
 
 cam/CMakeFiles/cam_generate_messages_cpp.dir/clean:
-	cd /home/neil/catkin_ws/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/cam_generate_messages_cpp.dir/cmake_clean.cmake
+	cd /home/neil/puzzleArm/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/cam_generate_messages_cpp.dir/cmake_clean.cmake
 .PHONY : cam/CMakeFiles/cam_generate_messages_cpp.dir/clean
 
 cam/CMakeFiles/cam_generate_messages_cpp.dir/depend:
-	cd /home/neil/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/catkin_ws/src /home/neil/catkin_ws/src/cam /home/neil/catkin_ws/build /home/neil/catkin_ws/build/cam /home/neil/catkin_ws/build/cam/CMakeFiles/cam_generate_messages_cpp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/neil/puzzleArm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/puzzleArm/src /home/neil/puzzleArm/src/cam /home/neil/puzzleArm/build /home/neil/puzzleArm/build/cam /home/neil/puzzleArm/build/cam/CMakeFiles/cam_generate_messages_cpp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : cam/CMakeFiles/cam_generate_messages_cpp.dir/depend
 

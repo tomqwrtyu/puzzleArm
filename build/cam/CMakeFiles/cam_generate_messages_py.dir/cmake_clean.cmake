@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_py"
-  "/home/neil/catkin_ws/devel/lib/python2.7/dist-packages/cam/srv/_num_state.py"
-  "/home/neil/catkin_ws/devel/lib/python2.7/dist-packages/cam/srv/__init__.py"
+  "/home/neil/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_num_state.py"
+  "/home/neil/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/__init__.py"
 )
 
 # Per-language clean rules from dependency scanning.

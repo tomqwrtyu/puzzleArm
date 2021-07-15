@@ -43,32 +43,32 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/neil/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/neil/puzzleArm/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/neil/catkin_ws/build
+CMAKE_BINARY_DIR = /home/neil/puzzleArm/build
 
 # Utility rule file for cam_generate_messages_eus.
 
 # Include the progress variables for this target.
 include cam/CMakeFiles/cam_generate_messages_eus.dir/progress.make
 
-cam/CMakeFiles/cam_generate_messages_eus: /home/neil/catkin_ws/devel/share/roseus/ros/cam/srv/num_state.l
-cam/CMakeFiles/cam_generate_messages_eus: /home/neil/catkin_ws/devel/share/roseus/ros/cam/manifest.l
+cam/CMakeFiles/cam_generate_messages_eus: /home/neil/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l
+cam/CMakeFiles/cam_generate_messages_eus: /home/neil/puzzleArm/devel/share/roseus/ros/cam/manifest.l
 
 
-/home/neil/catkin_ws/devel/share/roseus/ros/cam/srv/num_state.l: /opt/ros/melodic/lib/geneus/gen_eus.py
-/home/neil/catkin_ws/devel/share/roseus/ros/cam/srv/num_state.l: /home/neil/catkin_ws/src/cam/srv/num_state.srv
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/neil/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating EusLisp code from cam/num_state.srv"
-	cd /home/neil/catkin_ws/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/neil/catkin_ws/src/cam/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/neil/catkin_ws/devel/share/roseus/ros/cam/srv
+/home/neil/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l: /opt/ros/melodic/lib/geneus/gen_eus.py
+/home/neil/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l: /home/neil/puzzleArm/src/cam/srv/num_state.srv
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/neil/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating EusLisp code from cam/num_state.srv"
+	cd /home/neil/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/neil/puzzleArm/src/cam/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/neil/puzzleArm/devel/share/roseus/ros/cam/srv
 
-/home/neil/catkin_ws/devel/share/roseus/ros/cam/manifest.l: /opt/ros/melodic/lib/geneus/gen_eus.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/neil/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating EusLisp manifest code for cam"
-	cd /home/neil/catkin_ws/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py -m -o /home/neil/catkin_ws/devel/share/roseus/ros/cam cam std_msgs
+/home/neil/puzzleArm/devel/share/roseus/ros/cam/manifest.l: /opt/ros/melodic/lib/geneus/gen_eus.py
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/neil/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating EusLisp manifest code for cam"
+	cd /home/neil/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py -m -o /home/neil/puzzleArm/devel/share/roseus/ros/cam cam std_msgs
 
 cam_generate_messages_eus: cam/CMakeFiles/cam_generate_messages_eus
-cam_generate_messages_eus: /home/neil/catkin_ws/devel/share/roseus/ros/cam/srv/num_state.l
-cam_generate_messages_eus: /home/neil/catkin_ws/devel/share/roseus/ros/cam/manifest.l
+cam_generate_messages_eus: /home/neil/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l
+cam_generate_messages_eus: /home/neil/puzzleArm/devel/share/roseus/ros/cam/manifest.l
 cam_generate_messages_eus: cam/CMakeFiles/cam_generate_messages_eus.dir/build.make
 
 .PHONY : cam_generate_messages_eus
@@ -79,10 +79,10 @@ cam/CMakeFiles/cam_generate_messages_eus.dir/build: cam_generate_messages_eus
 .PHONY : cam/CMakeFiles/cam_generate_messages_eus.dir/build
 
 cam/CMakeFiles/cam_generate_messages_eus.dir/clean:
-	cd /home/neil/catkin_ws/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/cam_generate_messages_eus.dir/cmake_clean.cmake
+	cd /home/neil/puzzleArm/build/cam && $(CMAKE_COMMAND) -P CMakeFiles/cam_generate_messages_eus.dir/cmake_clean.cmake
 .PHONY : cam/CMakeFiles/cam_generate_messages_eus.dir/clean
 
 cam/CMakeFiles/cam_generate_messages_eus.dir/depend:
-	cd /home/neil/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/catkin_ws/src /home/neil/catkin_ws/src/cam /home/neil/catkin_ws/build /home/neil/catkin_ws/build/cam /home/neil/catkin_ws/build/cam/CMakeFiles/cam_generate_messages_eus.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/neil/puzzleArm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/neil/puzzleArm/src /home/neil/puzzleArm/src/cam /home/neil/puzzleArm/build /home/neil/puzzleArm/build/cam /home/neil/puzzleArm/build/cam/CMakeFiles/cam_generate_messages_eus.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : cam/CMakeFiles/cam_generate_messages_eus.dir/depend
 

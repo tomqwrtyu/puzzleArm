@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_nodejs"
-  "/home/neil/catkin_ws/devel/share/gennodejs/ros/cam/srv/num_state.js"
+  "/home/neil/puzzleArm/devel/share/gennodejs/ros/cam/srv/num_state.js"
 )
 
 # Per-language clean rules from dependency scanning.
