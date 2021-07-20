@@ -1,2 +1,2 @@
 algo:cam:core
--DCATKIN_DEVEL_PREFIX=/home/neil/puzzleArm/devel -DCMAKE_INSTALL_PREFIX=/home/neil/puzzleArm/install -G Unix Makefiles
+-DCATKIN_DEVEL_PREFIX=/home/nvidia/puzzleArm/devel -DCMAKE_INSTALL_PREFIX=/home/nvidia/puzzleArm/install -G Unix Makefiles

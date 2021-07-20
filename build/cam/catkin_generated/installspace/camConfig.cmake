@@ -67,14 +67,14 @@ set(cam_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(cam_SOURCE_PREFIX /home/neil/puzzleArm/src/cam)
-  set(cam_DEVEL_PREFIX /home/neil/puzzleArm/devel)
+  set(cam_SOURCE_PREFIX /home/nvidia/puzzleArm/src/cam)
+  set(cam_DEVEL_PREFIX /home/nvidia/puzzleArm/devel)
   set(cam_INSTALL_PREFIX "")
   set(cam_PREFIX ${cam_DEVEL_PREFIX})
 else()
   set(cam_SOURCE_PREFIX "")
   set(cam_DEVEL_PREFIX "")
-  set(cam_INSTALL_PREFIX /home/neil/puzzleArm/install)
+  set(cam_INSTALL_PREFIX /home/nvidia/puzzleArm/install)
   set(cam_PREFIX ${cam_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/neil/puzzleArm/install/lib;/opt/ros/melodic/lib)
+    foreach(path /home/nvidia/puzzleArm/install/lib;/opt/ros/melodic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

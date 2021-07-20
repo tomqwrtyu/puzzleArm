@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/algo_generate_messages_lisp"
-  "/home/neil/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp"
+  "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp"
 )
 
 # Per-language clean rules from dependency scanning.

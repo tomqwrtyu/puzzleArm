@@ -1,4 +1,4 @@
-prefix=/home/neil/puzzleArm/install
+prefix=/home/nvidia/puzzleArm/install
 
 Name: cam
 Description: Description of cam

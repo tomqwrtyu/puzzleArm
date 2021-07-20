@@ -1,4 +1,4 @@
-prefix=/home/neil/puzzleArm/install
+prefix=/home/nvidia/puzzleArm/install
 
 Name: algo
 Description: Description of algo

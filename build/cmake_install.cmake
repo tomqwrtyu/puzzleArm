@@ -1,8 +1,8 @@
-# Install script for directory: /home/neil/puzzleArm/src
+# Install script for directory: /home/nvidia/puzzleArm/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/neil/puzzleArm/install")
+  set(CMAKE_INSTALL_PREFIX "/home/nvidia/puzzleArm/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -49,91 +49,91 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/neil/puzzleArm/install/_setup_util.py")
+   "/home/nvidia/puzzleArm/install/_setup_util.py")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/neil/puzzleArm/install" TYPE PROGRAM FILES "/home/neil/puzzleArm/build/catkin_generated/installspace/_setup_util.py")
+file(INSTALL DESTINATION "/home/nvidia/puzzleArm/install" TYPE PROGRAM FILES "/home/nvidia/puzzleArm/build/catkin_generated/installspace/_setup_util.py")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/neil/puzzleArm/install/env.sh")
+   "/home/nvidia/puzzleArm/install/env.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/neil/puzzleArm/install" TYPE PROGRAM FILES "/home/neil/puzzleArm/build/catkin_generated/installspace/env.sh")
+file(INSTALL DESTINATION "/home/nvidia/puzzleArm/install" TYPE PROGRAM FILES "/home/nvidia/puzzleArm/build/catkin_generated/installspace/env.sh")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/neil/puzzleArm/install/setup.bash;/home/neil/puzzleArm/install/local_setup.bash")
+   "/home/nvidia/puzzleArm/install/setup.bash;/home/nvidia/puzzleArm/install/local_setup.bash")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/neil/puzzleArm/install" TYPE FILE FILES
-    "/home/neil/puzzleArm/build/catkin_generated/installspace/setup.bash"
-    "/home/neil/puzzleArm/build/catkin_generated/installspace/local_setup.bash"
+file(INSTALL DESTINATION "/home/nvidia/puzzleArm/install" TYPE FILE FILES
+    "/home/nvidia/puzzleArm/build/catkin_generated/installspace/setup.bash"
+    "/home/nvidia/puzzleArm/build/catkin_generated/installspace/local_setup.bash"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/neil/puzzleArm/install/setup.sh;/home/neil/puzzleArm/install/local_setup.sh")
+   "/home/nvidia/puzzleArm/install/setup.sh;/home/nvidia/puzzleArm/install/local_setup.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/neil/puzzleArm/install" TYPE FILE FILES
-    "/home/neil/puzzleArm/build/catkin_generated/installspace/setup.sh"
-    "/home/neil/puzzleArm/build/catkin_generated/installspace/local_setup.sh"
+file(INSTALL DESTINATION "/home/nvidia/puzzleArm/install" TYPE FILE FILES
+    "/home/nvidia/puzzleArm/build/catkin_generated/installspace/setup.sh"
+    "/home/nvidia/puzzleArm/build/catkin_generated/installspace/local_setup.sh"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/neil/puzzleArm/install/setup.zsh;/home/neil/puzzleArm/install/local_setup.zsh")
+   "/home/nvidia/puzzleArm/install/setup.zsh;/home/nvidia/puzzleArm/install/local_setup.zsh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/neil/puzzleArm/install" TYPE FILE FILES
-    "/home/neil/puzzleArm/build/catkin_generated/installspace/setup.zsh"
-    "/home/neil/puzzleArm/build/catkin_generated/installspace/local_setup.zsh"
+file(INSTALL DESTINATION "/home/nvidia/puzzleArm/install" TYPE FILE FILES
+    "/home/nvidia/puzzleArm/build/catkin_generated/installspace/setup.zsh"
+    "/home/nvidia/puzzleArm/build/catkin_generated/installspace/local_setup.zsh"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/neil/puzzleArm/install/.rosinstall")
+   "/home/nvidia/puzzleArm/install/.rosinstall")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/neil/puzzleArm/install" TYPE FILE FILES "/home/neil/puzzleArm/build/catkin_generated/installspace/.rosinstall")
+file(INSTALL DESTINATION "/home/nvidia/puzzleArm/install" TYPE FILE FILES "/home/nvidia/puzzleArm/build/catkin_generated/installspace/.rosinstall")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/neil/puzzleArm/build/gtest/cmake_install.cmake")
-  include("/home/neil/puzzleArm/build/algo/cmake_install.cmake")
-  include("/home/neil/puzzleArm/build/core/cmake_install.cmake")
-  include("/home/neil/puzzleArm/build/cam/cmake_install.cmake")
+  include("/home/nvidia/puzzleArm/build/gtest/cmake_install.cmake")
+  include("/home/nvidia/puzzleArm/build/algo/cmake_install.cmake")
+  include("/home/nvidia/puzzleArm/build/core/cmake_install.cmake")
+  include("/home/nvidia/puzzleArm/build/cam/cmake_install.cmake")
 
 endif()
 
@@ -145,5 +145,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/neil/puzzleArm/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/nvidia/puzzleArm/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

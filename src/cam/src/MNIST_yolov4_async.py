@@ -49,9 +49,9 @@ from performance_metrics import PerformanceMetrics
 
 class arguments:
     def __init__(self):
-        self.model = "/home/ubuntu/catkin_ws/src/cam/src/yolov4_mnist/frozen_darknet_yolov4_model.xml"
+        self.model = "/home/nvidia/puzzleArm/src/cam/src/yolov4_mnist/frozen_darknet_yolov4_model.xml"
         self.device = "GPU"
-        self.labels = ""#"/home/ubuntu/catkin_ws/src/beacon_cam/src/yolov4/labels_map.txt"
+        self.labels = ""
         self.prob_threshold = [0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7]
         self.iou_threshold = 0.4
         self.nireq = 1
@@ -255,6 +255,21 @@ def await_requests_completion(requests):
     for request in requests:
         request.wait() 
 
+def puzzle_pos_to_cam_pos(shape,puzzle_pos):
+    try:
+        if type(puzzle_pos) == type(int):
+            if puzzle_pos <= 8:
+                oneThirdOfX = floor(shape[0]/3)
+                oneThirdOfY = floor(shape[1]/3)
+                i = floor(puzzle_pos/3) + 0.5
+                j = puzzle_pos % 3 + 0.5
+                return (int(oneThirdOfX*i),int(oneThirdOfY*j))
+            else:
+                raise ValueError("Error value, should be in the range from 0~8")
+        else:
+            raise TypeError("Error type.")
+    except Exception as e:
+       print(repr(e))
 
 
 def pos_dtm(shape, x, y): #up left for 1,up mid for 2,up right for 3
@@ -275,10 +290,10 @@ def pos_dtm(shape, x, y): #up left for 1,up mid for 2,up right for 3
             examine_y[0] = examine_y[1]
             examine_y[1] += oneThirdOfY
             if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
-                return (int((examine_x[0]+examine_x[1])/2),int((examine_y[0]+examine_y[1])/2))
+                return i*3+j
             else:
                 continue
-    return (0,0)
+    return 'error'
 
             
 def write_line(img,shape):
@@ -295,14 +310,58 @@ def write_line(img,shape):
         y += oneThirdOfY
         cv2.line(img, (y,0), (y,xmax), (0,0,0), 3)
     return img
-            
 
+def cam_node():
+    def __init__(self):
+        self.last_detected_list=[None,None,None,None,None,None,None,None,None]
+        self.node = None
+        self.pub = None
+        
+    def start(self):
+        self.node = rospy.init_node('cam_node')
+        self.pub = rospy.Publisher('cam_detected', Unit8MultiArray, queue_size=10)
+
+    def publish(self,detected_list):
+        ret, pub_list = self.__debugging(detected_list)
+        self.pub.publish(pub_list)
+        return ret
+
+    def __debugging(self,detected_list):#in detected_list index 0 stands for number detected, 
+                                       #index 1 stands for position on puzzle,
+                                       #index 2 stands for detected position(camera axis).
+        n_detected_list = [None] * 9
+        not_none_indexs = []
+        l_not_none_numbers = 0
+        for index,last_result in enumerate(self.last_detected_list):
+            if last_result == None:
+                continue
+            else:
+                l_not_none_indexs.append(index)
+                l_not_none_numbers += 1
+        if l_not_none_numbers == 0: #first step in
+            for result in detected_list:
+                n_detected_list[result[1]] = result[0]
+            self.last_detected_list = n_detected_list
+            return detected_list, n_detected_list
+
+        n_not_none_numbers = len(detected_list)
+
+        if not abs(l_not_none_numbers - n_not_none_numbers) == 1: 
+            for result in detected_list:
+                n_detected_list[result[1]] = result[0]
+            self.last_detected_list = n_detected_list
+            return detected_list, n_detected_list
+        else:    
+            last_detected_list = [[index,num] for index,num in self.last_detected_list if not num == None]
+            return last_detected_list self.last_detected_list
 def main():
-    #args = build_argparser().parse_args()
     args = arguments()
     args.no_show = False
+
+    #Setup ros node
+    camNode = cam_node()
+    camNode.start()
     
-    node = rospy.init_node('hello_my_friend')
 
     # ------------- 1. Plugin initialization for specified device and load extensions library if specified -------------
     rospy.loginfo("Creating Inference Engine...")
@@ -364,7 +423,7 @@ def main():
     mode = Mode(Modes.USER_SPECIFIED)
     
     #Setup camera
-    cam = cv2.VideoCapture(3)
+    cam = cv2.VideoCapture(0)
 
 
     wait_key_time = 1
@@ -427,8 +486,8 @@ def main():
                 xavg = int((obj['xmin']+obj['xmax'])/2)
                 yavg = int((obj['ymin']+obj['ymax'])/2)
                 det_label = labels_map[obj['class_id']] if labels_map and len(labels_map) >= obj['class_id'] else \
-                    str(obj['class_id'])
-                detected_list.append([det_label,pos_dtm(frame.shape,yavg,xavg)])
+                    str(obj['class_id'])       
+                detected_list.append([det_label, pos_dtm(frame.shape,yavg,xavg)])
                 if args.raw_output_message:
                     rospy.loginfo(
                         "{:^9} | {:10f} | {:4} | {:4} | {:4} | {:4} | {} ".format(det_label, obj['confidence'],
@@ -438,6 +497,8 @@ def main():
             imgToShow = np.zeros((frame.shape[0],frame.shape[1],3), np.uint8)
             imgToShow.fill(255)
             imgToShow = write_line(imgToShow,frame.shape)
+
+            cam.publish(detected_list) 
             
             if any(detected_list):
                 for detected_number in detected_list:
@@ -445,8 +506,8 @@ def main():
                              min(int(detected_number[0]) * 14, 255),
                              min(int(detected_number[0]) * 10, 255))
                     cv2.putText(imgToShow,
-                                'here',#str(detected_number[0]),
-                                (detected_number[1][1],detected_number[1][0]), cv2.FONT_HERSHEY_DUPLEX, 2, color, 2)
+                                str(detected_number[0]),
+                                puzzle_pos_to_cam_pos(frame.shape, detected_number[1]), cv2.FONT_HERSHEY_DUPLEX, 2, color, 2)
                             
             if is_same_mode and prev_mode_active_request_count == 0:
                 mode_metrics[mode.current].update(start_time, frame)

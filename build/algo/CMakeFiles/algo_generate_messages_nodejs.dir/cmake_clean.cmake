@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/algo_generate_messages_nodejs"
-  "/home/neil/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js"
+  "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js"
 )
 
 # Per-language clean rules from dependency scanning.

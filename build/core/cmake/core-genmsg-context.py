@@ -1,7 +1,7 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
 messages_str = ""
-services_str = "/home/neil/puzzleArm/src/core/srv/route_command.srv"
+services_str = "/home/nvidia/puzzleArm/src/core/srv/route_command.srv"
 pkg_name = "core"
 dependencies_str = "std_msgs"
 langs = "gencpp;geneus;genlisp;gennodejs;genpy"

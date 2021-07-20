@@ -1,8 +1,8 @@
-# Install script for directory: /home/neil/puzzleArm/src/algo
+# Install script for directory: /home/nvidia/puzzleArm/src/algo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/neil/puzzleArm/install")
+  set(CMAKE_INSTALL_PREFIX "/home/nvidia/puzzleArm/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,53 +38,53 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/srv" TYPE FILE FILES "/home/neil/puzzleArm/src/algo/srv/num_state.srv")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/srv" TYPE FILE FILES "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/cmake" TYPE FILE FILES "/home/neil/puzzleArm/build/algo/catkin_generated/installspace/algo-msg-paths.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/cmake" TYPE FILE FILES "/home/nvidia/puzzleArm/build/algo/catkin_generated/installspace/algo-msg-paths.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/neil/puzzleArm/devel/include/algo")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/nvidia/puzzleArm/devel/include/algo")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/neil/puzzleArm/devel/share/roseus/ros/algo")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/nvidia/puzzleArm/devel/share/roseus/ros/algo")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/neil/puzzleArm/devel/share/common-lisp/ros/algo")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gennodejs/ros" TYPE DIRECTORY FILES "/home/neil/puzzleArm/devel/share/gennodejs/ros/algo")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gennodejs/ros" TYPE DIRECTORY FILES "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  execute_process(COMMAND "/usr/bin/python2" -m compileall "/home/neil/puzzleArm/devel/lib/python2.7/dist-packages/algo")
+  execute_process(COMMAND "/usr/bin/python2" -m compileall "/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/algo")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages" TYPE DIRECTORY FILES "/home/neil/puzzleArm/devel/lib/python2.7/dist-packages/algo")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages" TYPE DIRECTORY FILES "/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/algo")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/neil/puzzleArm/build/algo/catkin_generated/installspace/algo.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/nvidia/puzzleArm/build/algo/catkin_generated/installspace/algo.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/cmake" TYPE FILE FILES "/home/neil/puzzleArm/build/algo/catkin_generated/installspace/algo-msg-extras.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/cmake" TYPE FILE FILES "/home/nvidia/puzzleArm/build/algo/catkin_generated/installspace/algo-msg-extras.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/cmake" TYPE FILE FILES
-    "/home/neil/puzzleArm/build/algo/catkin_generated/installspace/algoConfig.cmake"
-    "/home/neil/puzzleArm/build/algo/catkin_generated/installspace/algoConfig-version.cmake"
+    "/home/nvidia/puzzleArm/build/algo/catkin_generated/installspace/algoConfig.cmake"
+    "/home/nvidia/puzzleArm/build/algo/catkin_generated/installspace/algoConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo" TYPE FILE FILES "/home/neil/puzzleArm/src/algo/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo" TYPE FILE FILES "/home/nvidia/puzzleArm/src/algo/package.xml")
 endif()
 

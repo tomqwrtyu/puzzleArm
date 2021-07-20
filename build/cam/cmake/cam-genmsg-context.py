@@ -1,7 +1,7 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
 messages_str = ""
-services_str = "/home/neil/puzzleArm/src/cam/srv/num_state.srv"
+services_str = "/home/nvidia/puzzleArm/src/cam/srv/num_state.srv"
 pkg_name = "cam"
 dependencies_str = "std_msgs"
 langs = "gencpp;geneus;genlisp;gennodejs;genpy"
