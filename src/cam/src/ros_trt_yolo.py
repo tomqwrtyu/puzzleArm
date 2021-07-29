@@ -228,10 +228,12 @@ class camNode():
 
 def main():
     args = parse_args()
+    abs_dir = os.path.join(os.path.abspath(r"."),'src','cam','src')
     if args.category_num <= 0:
         raise SystemExit('ERROR: bad category_num (%d)!' % args.category_num)
-    if not os.path.isfile('yolo/%s.trt' % args.model):
-        raise SystemExit('ERROR: file (yolo/%s.trt) not found!' % args.model)
+    trt_dir = abs_dir + '/yolo/%s.trt' % args.model
+    if not os.path.isfile(trt_dir):
+        raise SystemExit('ERROR: file (%s.trt) not found!' % args.model)
 
     cam = Camera(args)
     if not cam.isOpened():
