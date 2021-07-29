@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+"""trt_yolo.py
+
+This script demonstrates how to do real-time object detection with
+TensorRT optimized YOLO engine.
+"""
+
+
+import os
+import time
+import argparse
+
+import cv2
+import pycuda.autoinit  # This is needed for initializing CUDA driver
+
+import rospy
+from std_msgs.msg import String
+from std_msgs.msg import Float32MultiArray
+from beacon_cam.srv import *
+
+from utils.yolo_classes import get_cls_dict
+from utils.camera import add_camera_args, Camera
+from utils.display import open_window, set_display, show_fps
+from utils.visualization import BBoxVisualization
+from utils.yolo_with_plugins import TrtYOLO
+
+
+WINDOW_NAME = 'ROSTrtYOLODemo'
+
+
+def parse_args():
+    """Parse input arguments."""
+    desc = ('Capture and display live camera video, while doing '
+            'real-time object detection with TensorRT optimized '
+            'YOLO model on Jetson')
+    parser = argparse.ArgumentParser(description=desc)
+    parser = add_camera_args(parser)
+    parser.add_argument(
+        '-c', '--category_num', type=int, default=80,
+        help='number of object categories [80]')
+    parser.add_argument(
+        '-m', '--model', type=str, required=True,
+        help=('[yolov3-tiny|yolov3|yolov3-spp|yolov4-tiny|yolov4|'
+              'yolov4-csp|yolov4x-mish]-[{dimension}], where '
+              '{dimension} could be either a single number (e.g. '
+              '288, 416, 608) or 2 numbers, WxH (e.g. 416x256)'))
+    parser.add_argument(
+        '-l', '--letter_box', action='store_true',
+        help='inference with letterboxed image [False]')
+    args = parser.parse_args()
+    return args
+
+"""
+class arguments:
+    def __init__(self):
+        self.category_num = 10
+        self.model = "yolov4-custom"
+        self.letter_box = True
+        self.usb = 0
+"""
+
+def loop_and_detect(cam, trt_yolo, conf_th, vis):
+    """Continuously capture images from camera and do object detection.
+
+    # Arguments
+      cam: the camera instance (video source).
+      trt_yolo: the TRT YOLO object detector instance.
+      conf_th: confidence/score threshold for object detection.
+      vis: for visualization.
+    """
+    full_scrn = False
+    fps = 0.0
+    tic = time.time()
+    while True:
+        if cv2.getWindowProperty(WINDOW_NAME, 0) < 0:
+            break
+        img = cam.read()
+        if img is None:
+            break
+        boxes, confs, clss = trt_yolo.detect(img, conf_th)
+        print(boxes,'\n',confs,'\n',clss,'\n')
+        img = vis.draw_bboxes(img, boxes, confs, clss)
+        img = show_fps(img, fps)
+        cv2.imshow(WINDOW_NAME, img)
+        toc = time.time()
+        curr_fps = 1.0 / (toc - tic)
+        # calculate an exponentially decaying average of fps number
+        fps = curr_fps if fps == 0.0 else (fps*0.95 + curr_fps*0.05)
+        tic = toc
+        key = cv2.waitKey(1)
+        if key == 27:  # ESC key: quit program
+            break
+        elif key == ord('F') or key == ord('f'):  # Toggle fullscreen
+            full_scrn = not full_scrn
+            set_display(WINDOW_NAME, full_scrn)
+
+def puzzle_pos_to_cam_pos(shape,puzzle_pos):
+    try:
+        if type(puzzle_pos) == type(int):
+            if puzzle_pos <= 8:
+                oneThirdOfX = floor(shape[0]/3)
+                oneThirdOfY = floor(shape[1]/3)
+                i = floor(puzzle_pos/3) + 0.5
+                j = puzzle_pos % 3 + 0.5
+                return (int(oneThirdOfX*i),int(oneThirdOfY*j))
+            else:
+                raise ValueError("Error value, should be in the range from 0~8")
+        else:
+            raise TypeError("Error type.")
+    except Exception as e:
+       print(repr(e))
+
+
+def pos_dtm(shape, x, y): #up left for 1,up mid for 2,up right for 3
+                           #left for 4,mid for 5,right for 6
+                           #down left for 7,down mid for 8,down right for 9
+    examine_axes_list = []
+    oneThirdOfX = floor(shape[0]/3)
+    oneThirdOfY = floor(shape[1]/3)
+    examine_x = [0,0]
+    examine_y = [0,0]
+    for i in range(3):
+        j = 0
+        examine_x[0] = examine_x[1]
+        examine_x[1] += oneThirdOfX
+        examine_y = [0,0]
+        while(j < 3):
+            j += 1
+            examine_y[0] = examine_y[1]
+            examine_y[1] += oneThirdOfY
+            if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
+                return i*3+j
+            else:
+                continue
+    return 'error'
+
+            
+def write_line(img,shape):
+    oneThirdOfX = floor(shape[0]/3)
+    oneThirdOfY = floor(shape[1]/3)
+    xmax = shape[0]
+    ymax = shape[1]
+    x = 0
+    y = 0
+    for i in range(3):
+        x += oneThirdOfX
+        cv2.line(img, (0,x), (ymax,x), (0,0,0), 3)
+    for j in range(3):
+        y += oneThirdOfY
+        cv2.line(img, (y,0), (y,xmax), (0,0,0), 3)
+    return img
+
+def cam_node():
+    def __init__(self):
+        self.last_detected_list=[None,None,None,None,None,None,None,None,None]
+        self.node = None
+        self.pub = None
+        
+    def start(self):
+        self.node = rospy.init_node('cam_node')
+        self.pub = rospy.Publisher('cam_detected', Unit8MultiArray, queue_size=10)
+
+    def publish(self,detected_list):
+        ret, pub_list = self.__debugging(detected_list)
+        self.pub.publish(pub_list)
+        return ret
+
+    def __debugging(self,detected_list):#in detected_list index 0 stands for number detected, 
+                                       #index 1 stands for position on puzzle,
+                                       #index 2 stands for detected position(camera axis).
+        n_detected_list = [None] * 9
+        not_none_indexs = []
+        l_not_none_numbers = 0
+        for index,last_result in enumerate(self.last_detected_list):
+            if last_result == None:
+                continue
+            else:
+                l_not_none_indexs.append(index)
+                l_not_none_numbers += 1
+        if l_not_none_numbers == 0: #first step in
+            for result in detected_list:
+                n_detected_list[result[1]] = result[0]
+            self.last_detected_list = n_detected_list
+            return detected_list, n_detected_list
+
+        n_not_none_numbers = len(detected_list)
+
+        if not abs(l_not_none_numbers - n_not_none_numbers) == 1: 
+            for result in detected_list:
+                n_detected_list[result[1]] = result[0]
+            self.last_detected_list = n_detected_list
+            return detected_list, n_detected_list
+        else:    
+            last_detected_list = [[index,num] for index,num in self.last_detected_list if not num == None]
+            return last_detected_list self.last_detected_list
+
+
+def main():
+    args = parse_args()
+    if args.category_num <= 0:
+        raise SystemExit('ERROR: bad category_num (%d)!' % args.category_num)
+    if not os.path.isfile('yolo/%s.trt' % args.model):
+        raise SystemExit('ERROR: file (yolo/%s.trt) not found!' % args.model)
+
+    cam = Camera(args)
+    if not cam.isOpened():
+        raise SystemExit('ERROR: failed to open camera!')
+
+    cls_dict = get_cls_dict(args.category_num)
+    vis = BBoxVisualization(cls_dict)
+    trt_yolo = TrtYOLO(args.model, args.category_num, args.letter_box)
+
+    open_window(
+        WINDOW_NAME, 'Camera TensorRT YOLO Demo',
+        cam.img_width, cam.img_height)
+    loop_and_detect(cam, trt_yolo, conf_th=0.3, vis=vis)
+
+    cam.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()
