@@ -9,6 +9,8 @@ TensorRT optimized YOLO engine.
 import os
 import time
 import argparse
+from math import floor
+import numpy as np
 
 import cv2
 import pycuda.autoinit  # This is needed for initializing CUDA driver
@@ -16,7 +18,8 @@ import pycuda.autoinit  # This is needed for initializing CUDA driver
 import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
-from beacon_cam.srv import *
+from std_msgs.msg import UInt8MultiArray
+from cam.srv import *
 
 from utils.yolo_classes import get_cls_dict
 from utils.camera import add_camera_args, Camera
@@ -39,7 +42,7 @@ def parse_args():
         '-c', '--category_num', type=int, default=80,
         help='number of object categories [80]')
     parser.add_argument(
-        '-m', '--model', type=str, required=True,default='yolov4_tiny_puzzle'
+        '-m', '--model', type=str, required=True, default='yolov4_tiny_puzzle',
         help=('[yolov3-tiny|yolov3|yolov3-spp|yolov4-tiny|yolov4|'
               'yolov4-csp|yolov4x-mish]-[{dimension}], where '
               '{dimension} could be either a single number (e.g. '
@@ -59,7 +62,7 @@ class arguments:
         self.usb = 0
 """
 
-def loop_and_detect(node, cam, trt_yolo, conf_th, vis):
+def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     """Continuously capture images from camera and do object detection.
 
     # Arguments
@@ -79,7 +82,7 @@ def loop_and_detect(node, cam, trt_yolo, conf_th, vis):
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
 
-        list_for_publish =  generateListForPublish(cam.img_handle.shape, boxes, clss)   
+        list_for_publish =  generateListForPublish(cam.img_handle.shape, boxes, clss, cls_dict)   
         node.publish(list_for_publish) 
         nine_squares_img = summonNineSquares(cam.img_handle.shape)
         if any(list_for_publish):
@@ -89,8 +92,8 @@ def loop_and_detect(node, cam, trt_yolo, conf_th, vis):
                          min(int(detected_number[0]) * 10, 255))
                 cv2.putText(nine_squares_img,
                             str(detected_number[0]),
-                            puzzle_pos_to_cam_pos(cam.img_handle.shape, detected_number[1]),
-                            cv2.FONT_HERSHEY_DUPLEX, 2, color, 2)
+                            puzzlePosToCamPos(cam.img_handle.shape, detected_number[1]),
+                            cv2.FONT_HERSHEY_DUPLEX, 1, color, 1)
         nine_squares_img = show_fps(nine_squares_img, fps)
         cv2.imshow(WINDOW_NAME, nine_squares_img)
 
@@ -106,19 +109,17 @@ def loop_and_detect(node, cam, trt_yolo, conf_th, vis):
             full_scrn = not full_scrn
             set_display(WINDOW_NAME, full_scrn)
 
-def puzzlePosToCamPos(shape,puzzle_pos):
+def puzzlePosToCamPos(shape, puzzle_pos):
     try:
-        if type(puzzle_pos) == type(int):
-            if puzzle_pos <= 8:
-                oneThirdOfX = floor(shape[0]/3)
-                oneThirdOfY = floor(shape[1]/3)
-                i = floor(puzzle_pos/3) + 0.5
-                j = puzzle_pos % 3 + 0.5
-                return (int(oneThirdOfX*i),int(oneThirdOfY*j))
-            else:
-                raise ValueError("Error value, should be in the range from 0~8")
+        if puzzle_pos <= 9 and puzzle_pos >= 1:
+            puzzle_pos = puzzle_pos - 1
+            oneThirdOfX = floor(shape[0]/3)
+            oneThirdOfY = floor(shape[1]/3)
+            i = (lambda x: floor(x/3) + 0.5 if floor(x/3) > 0.5 else 0.5)(puzzle_pos)
+            j = (lambda x: x % 3 + 0.5 if x % 3 > 0.5 else 0.5)(puzzle_pos)
+            return (int(oneThirdOfY*j),int(oneThirdOfX*i))#cv2 image need (pixel in width,pixel in height)
         else:
-            raise TypeError("Error type.")
+            raise ValueError("Error value, should be in the range from 1~9")
     except Exception as e:
        print(repr(e))
 
@@ -126,6 +127,7 @@ def puzzlePosToCamPos(shape,puzzle_pos):
 def positionDetermine(shape, x, y): #up left for 1,up mid for 2,up right for 3
                            #left for 4,mid for 5,right for 6
                            #down left for 7,down mid for 8,down right for 9
+    
     try:
         examine_axes_list = []
         oneThirdOfX = floor(shape[0]/3)
@@ -145,21 +147,22 @@ def positionDetermine(shape, x, y): #up left for 1,up mid for 2,up right for 3
                     return i*3+j
                 else:
                     continue
-        raise Exception('Unexpected Error.')
-     except Exception as e:
+        raise Exception("Unexpected Error.")
+    except Exception as e:
         print(repr(e))
 
-def generateListForPublish(shape, boxes, classes): #boxes : [ymin,xmin,ymax,xmax]
+def generateListForPublish(shape, boxes, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
     detected_objects = []
+    classes = np.int8(classes)
     for index,box in enumerate(boxes):
-        xavg = floor((box[1]) + box[3] / 2)
-        yavg = floor((box[0]) + box[2] / 2)
-        detected_object = [classes[index],positionDetermine(shape,xavg,yavg),(xavg, yavg)]
+        xavg = floor((box[1] + box[3]) / 2)
+        yavg = floor((box[0] + box[2]) / 2)
+        detected_object = [cls_dict[classes[index]],positionDetermine(shape,xavg,yavg),(xavg, yavg)]
         detected_objects.append(detected_object)
     return detected_objects
             
 def summonNineSquares(shape):
-    img = np.zeros((frame.shape[0],frame.shape[1],3), np.uint8)
+    img = np.zeros((shape[0], shape[1], 3), np.uint8)
     img.fill(255)
     oneThirdOfX = floor(shape[0]/3)
     oneThirdOfY = floor(shape[1]/3)
@@ -175,18 +178,21 @@ def summonNineSquares(shape):
         cv2.line(img, (y,0), (y,xmax), (0,0,0), 3)
     return img
 
-def camNode():
+class camNode():
     def __init__(self):
-        self.last_detected_list=[None,None,None,None,None,None,None,None,None]
+        self.last_detected_list=[None] * 9
         self.node = None
         self.pub = None
         
     def start(self):
         self.node = rospy.init_node('cam_node')
-        self.pub = rospy.Publisher('cam_detected', Unit8MultiArray, queue_size=10)
+        self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
 
     def publish(self,detected_list):
         ret, pub_list = self.__debugging(detected_list)
+        for pub in pub_list:
+            if pub == None:
+                return ret
         self.pub.publish(pub_list)
         return ret
 
@@ -194,7 +200,7 @@ def camNode():
                                        #index 1 stands for position on puzzle,
                                        #index 2 stands for detected position(camera 2D axis).
         n_detected_list = [None] * 9
-        not_none_indexs = []
+        l_not_none_indexs = []
         l_not_none_numbers = 0
         for index,last_result in enumerate(self.last_detected_list):
             if last_result == None:
@@ -204,7 +210,7 @@ def camNode():
                 l_not_none_numbers += 1
         if l_not_none_numbers == 0: #first step in
             for result in detected_list:
-                n_detected_list[result[1]] = result[0]
+                n_detected_list[result[1]-1] = result[0]
             self.last_detected_list = n_detected_list
             return detected_list, n_detected_list
 
@@ -212,12 +218,12 @@ def camNode():
 
         if not abs(l_not_none_numbers - n_not_none_numbers) == 1: 
             for result in detected_list:
-                n_detected_list[result[1]] = result[0]
+                n_detected_list[result[1]-1] = result[0]
             self.last_detected_list = n_detected_list
             return detected_list, n_detected_list
         else:    
-            last_detected_list = [[index,num] for index,num in self.last_detected_list if not num == None]
-            return last_detected_list self.last_detected_list
+            last_detected_list = [num for num in self.last_detected_list]
+            return last_detected_list,self.last_detected_list
 
 
 def main():
@@ -242,7 +248,7 @@ def main():
     open_window(
         WINDOW_NAME, 'Camera TensorRT YOLO Demo',
         cam.img_width, cam.img_height)
-    loop_and_detect(node, cam, trt_yolo, conf_th=0.3, vis=vis)
+    loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th=0.6, vis=vis)
 
     cam.release()
     cv2.destroyAllWindows()

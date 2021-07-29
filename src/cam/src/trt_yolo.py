@@ -99,7 +99,7 @@ def main():
     open_window(
         WINDOW_NAME, 'Camera TensorRT YOLO Demo',
         cam.img_width, cam.img_height)
-    loop_and_detect(cam, trt_yolo, conf_th=0.3, vis=vis)
+    loop_and_detect(cam, trt_yolo, conf_th=0.6, vis=vis)
 
     cam.release()
     cv2.destroyAllWindows()

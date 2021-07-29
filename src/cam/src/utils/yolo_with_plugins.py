@@ -122,7 +122,7 @@ def _postprocess_yolo(trt_outputs, img_w, img_h, conf_th, nms_threshold,
     if len(detections) == 0:
         boxes = np.zeros((0, 4), dtype=np.int)
         scores = np.zeros((0,), dtype=np.float32)
-        classes = np.zeros((0,), dtype=np.float32)
+        classes = np.zeros((0,), dtype=np.int)
     else:
         box_scores = detections[:, 4] * detections[:, 6]
 
