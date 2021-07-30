@@ -53,15 +53,6 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-"""
-class arguments:
-    def __init__(self):
-        self.category_num = 10
-        self.model = "yolov4-custom"
-        self.letter_box = True
-        self.usb = 0
-"""
-
 def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     """Continuously capture images from camera and do object detection.
 
@@ -109,7 +100,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             full_scrn = not full_scrn
             set_display(WINDOW_NAME, full_scrn)
 
-def puzzlePosToCamPos(shape, puzzle_pos):
+def puzzlePosToCamPos(shape, puzzle_pos):#Convert 1~9 to position on image
     try:
         if puzzle_pos <= 9 and puzzle_pos >= 1:
             puzzle_pos = puzzle_pos - 1
@@ -125,9 +116,8 @@ def puzzlePosToCamPos(shape, puzzle_pos):
 
 
 def positionDetermine(shape, x, y): #up left for 1,up mid for 2,up right for 3
-                           #left for 4,mid for 5,right for 6
-                           #down left for 7,down mid for 8,down right for 9
-    
+                                    #left for 4,mid for 5,right for 6
+                                    #down left for 7,down mid for 8,down right for 9
     try:
         examine_axes_list = []
         oneThirdOfX = floor(shape[0]/3)
@@ -161,7 +151,7 @@ def generateListForPublish(shape, boxes, classes, cls_dict): #boxes : [ymin,xmin
         detected_objects.append(detected_object)
     return detected_objects
             
-def summonNineSquares(shape):
+def summonNineSquares(shape):#As the funcion name says.
     img = np.zeros((shape[0], shape[1], 3), np.uint8)
     img.fill(255)
     oneThirdOfX = floor(shape[0]/3)
@@ -178,7 +168,7 @@ def summonNineSquares(shape):
         cv2.line(img, (y,0), (y,xmax), (0,0,0), 3)
     return img
 
-class camNode():
+class camNode():#For ROS node establish and publish
     def __init__(self):
         self.last_detected_list=[None] * 9
         self.node = None
@@ -197,8 +187,9 @@ class camNode():
         return ret
 
     def __debugging(self,detected_list):#in detected_list index 0 stands for number detected, 
-                                       #index 1 stands for position on puzzle,
-                                       #index 2 stands for detected position(camera 2D axis).
+                                        #index 1 stands for position on puzzle,
+                                        #index 2 stands for detected position(camera 2D axis).
+                                        #This code is now useless
         n_detected_list = [None] * 9
         l_not_none_indexs = []
         l_not_none_numbers = 0
