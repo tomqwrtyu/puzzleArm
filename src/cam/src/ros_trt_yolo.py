@@ -170,7 +170,8 @@ def summonNineSquares(shape):#As the funcion name says.
 
 class camNode():#For ROS node establish and publish
     def __init__(self):
-        self.last_detected_list=[None] * 9
+        self.last_detected_list = [None] * 9
+        self.last_tracking_time = None
         self.node = None
         self.pub = None
         
@@ -179,43 +180,37 @@ class camNode():#For ROS node establish and publish
         self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
 
     def publish(self,detected_list):
-        ret, pub_list = self.__debugging(detected_list)
-        for pub in pub_list:
-            if pub == None:
-                return ret
+        pub_list = self.__debugging(detected_list)
         self.pub.publish(pub_list)
-        return ret
 
     def __debugging(self,detected_list):#in detected_list index 0 stands for number detected, 
                                         #index 1 stands for position on puzzle,
                                         #index 2 stands for detected position(camera 2D axis).
-                                        #This code is now useless
-        n_detected_list = [None] * 9
+                                        #Warning!! This code may be useless
+        new_detected_list = [999.0] * 9
         l_not_none_indexs = []
         l_not_none_numbers = 0
         for index,last_result in enumerate(self.last_detected_list):
-            if last_result == None:
+            if last_result == 999.0:
                 continue
             else:
                 l_not_none_indexs.append(index)
                 l_not_none_numbers += 1
         if l_not_none_numbers == 0: #first step in
             for result in detected_list:
-                n_detected_list[result[1]-1] = result[0]
-            self.last_detected_list = n_detected_list
-            return detected_list, n_detected_list
+                new_detected_list[result[1]-1] = result[0]
+            self.last_detected_list = new_detected_list
+            return new_detected_list
 
         n_not_none_numbers = len(detected_list)
 
-        if not abs(l_not_none_numbers - n_not_none_numbers) == 1: 
+        if l_not_none_numbers - n_not_none_numbers > 0: #Assume no detection error,there are some numbers being covered.
+            return self.last_detected_list #Return list before covering and no change in last_detected_list
+        elif l_not_none_numbers - n_not_none_numbers < 0: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
             for result in detected_list:
-                n_detected_list[result[1]-1] = result[0]
-            self.last_detected_list = n_detected_list
-            return detected_list, n_detected_list
-        else:    
-            last_detected_list = [num for num in self.last_detected_list]
-            return last_detected_list,self.last_detected_list
-
+                new_detected_list[result[1]-1] = result[0]
+            self.last_detected_list = new_detected_list
+            return new_detected_list#Update and return last_detected_list 
 
 def main():
     args = parse_args()
