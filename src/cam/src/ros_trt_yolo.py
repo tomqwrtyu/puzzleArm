@@ -39,10 +39,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description=desc)
     parser = add_camera_args(parser)
     parser.add_argument(
-        '-c', '--category_num', type=int, default=80,
-        help='number of object categories [80]')
+        '-c', '--category_num', type=int, default=9,
+        help='number of object categories [9]')
     parser.add_argument(
-        '-m', '--model', type=str, required=True, default='yolov4_tiny_puzzle',
+        '-m', '--model', type=str, default='yolov4-tiny_40_0814',
         help=('[yolov3-tiny|yolov3|yolov3-spp|yolov4-tiny|yolov4|'
               'yolov4-csp|yolov4x-mish]-[{dimension}], where '
               '{dimension} could be either a single number (e.g. '
@@ -170,8 +170,8 @@ def summonNineSquares(shape):#As the funcion name says.
 
 class camNode():#For ROS node establish and publish
     def __init__(self):
-        self.last_detected_list = [None] * 9
-        self.last_tracking_time = None
+        #self.last_tracking_time = None
+        self.message_to_pub = UInt8MultiArray()
         self.node = None
         self.pub = None
         
@@ -187,30 +187,34 @@ class camNode():#For ROS node establish and publish
                                         #index 1 stands for position on puzzle,
                                         #index 2 stands for detected position(camera 2D axis).
                                         #Warning!! This code may be useless
-        new_detected_list = [999.0] * 9
+        self.message_to_pub.layout = time.time()
+        new_detected_list = [999] * 9
         l_not_none_indexs = []
         l_not_none_numbers = 0
-        for index,last_result in enumerate(self.last_detected_list):
-            if last_result == 999.0:
+        for index,last_result in enumerate(self.message_to_pub.data):
+            if last_result == 999:
                 continue
             else:
                 l_not_none_indexs.append(index)
                 l_not_none_numbers += 1
         if l_not_none_numbers == 0: #first step in
             for result in detected_list:
-                new_detected_list[result[1]-1] = result[0]
-            self.last_detected_list = new_detected_list
-            return new_detected_list
+                new_detected_list[result[1]-1] = int(result[0])
+            self.message_to_pub.data = new_detected_list
+            print(self.message_to_pub.layout,self.message_to_pub.data,'first')
+            return self.message_to_pub
 
         n_not_none_numbers = len(detected_list)
 
         if l_not_none_numbers - n_not_none_numbers > 0: #Assume no detection error,there are some numbers being covered.
-            return self.last_detected_list #Return list before covering and no change in last_detected_list
-        elif l_not_none_numbers - n_not_none_numbers < 0: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
+            print(self.message_to_pub.layout,self.message_to_pub.data,'case 1')
+            return self.message_to_pub #Return list before covering and no change in last detected list
+        else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
             for result in detected_list:
-                new_detected_list[result[1]-1] = result[0]
-            self.last_detected_list = new_detected_list
-            return new_detected_list#Update and return last_detected_list 
+                new_detected_list[result[1]-1] = int(result[0])
+            self.message_to_pub.data = new_detected_list
+            print(self.message_to_pub.layout,self.message_to_pub.data,'case 2')
+            return self.message_to_pub#Update and return last_detected_list 
 
 def main():
     args = parse_args()

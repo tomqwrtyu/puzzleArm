@@ -14,8 +14,11 @@ import cv2
 import tensorrt as trt
 import pycuda.driver as cuda
 
+if os.path.abspath(r".") == '/home/nvidia/puzzleArm':
+    abs_dir = os.path.join(os.path.abspath(r"."),'src','cam','src')
+else:
+    abs_dir = os.path.abspath(r".")
 
-abs_dir = os.path.join(os.path.abspath(r"."),'src','cam','src')
 try:
     ctypes.cdll.LoadLibrary(abs_dir + '/plugins/libyolo_layer.so')
 except OSError as e:
