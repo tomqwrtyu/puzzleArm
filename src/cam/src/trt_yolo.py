@@ -57,6 +57,10 @@ def loop_and_detect(cam, trt_yolo, conf_th, vis):
     full_scrn = False
     fps = 0.0
     tic = time.time()
+    #Setup opencv video writer
+    fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
+    video_shape = (cam.img_handle.shape[1],cam.img_handle.shape[0])
+    out = cv2.VideoWriter('result.mp4', fourcc, 30.0, video_shape)
     while True:
         if cv2.getWindowProperty(WINDOW_NAME, 0) < 0:
             break
@@ -64,9 +68,9 @@ def loop_and_detect(cam, trt_yolo, conf_th, vis):
         if img is None:
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th)
-        print(boxes,'\n',confs,'\n',clss,'\n')
         img = vis.draw_bboxes(img, boxes, confs, clss)
         img = show_fps(img, fps)
+        out.write(img)
         cv2.imshow(WINDOW_NAME, img)
         toc = time.time()
         curr_fps = 1.0 / (toc - tic)
@@ -79,11 +83,12 @@ def loop_and_detect(cam, trt_yolo, conf_th, vis):
         elif key == ord('F') or key == ord('f'):  # Toggle fullscreen
             full_scrn = not full_scrn
             set_display(WINDOW_NAME, full_scrn)
+    out.release()
 
 
 def main():
     args = parse_args()
-    abs_dir = os.path.join(os.path.abspath(r"."),'src','cam','src')
+    abs_dir = os.path.dirname(os.path.abspath(__file__))
     if args.category_num <= 0:
         raise SystemExit('ERROR: bad category_num (%d)!' % args.category_num)
     trt_dir = abs_dir + '/yolo/%s.trt' % args.model
@@ -101,7 +106,7 @@ def main():
     open_window(
         WINDOW_NAME, 'Camera TensorRT YOLO Demo',
         cam.img_width, cam.img_height)
-    loop_and_detect(cam, trt_yolo, conf_th=0.6, vis=vis)
+    loop_and_detect(cam, trt_yolo, conf_th=0.7, vis=vis)
 
     cam.release()
     cv2.destroyAllWindows()

@@ -48,6 +48,9 @@ def parse_args():
               '{dimension} could be either a single number (e.g. '
               '288, 416, 608) or 2 numbers, WxH (e.g. 416x256)'))
     parser.add_argument(
+        '-w', '--write_video', type=bool, default=False,
+        help=('Write the result video.'))
+    parser.add_argument(
         '-l', '--letter_box', action='store_true',
         help='inference with letterboxed image [False]')
     args = parser.parse_args()
@@ -65,6 +68,10 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     full_scrn = False
     fps = 0.0
     tic = time.time()
+    #Setup opencv video writer
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_shape = (cam.img_handle.shape[1],cam.img_handle.shape[0])
+    out = cv2.VideoWriter('result.mp4', fourcc, 30.0, video_shape)
     while True:
         if cv2.getWindowProperty(WINDOW_NAME, 0) < 0:
             break
@@ -73,20 +80,22 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
 
-        list_for_publish =  generateListForPublish(cam.img_handle.shape, boxes, clss, cls_dict)   
-        node.publish(list_for_publish) 
+        list_for_publish = generateListForPublish(cam.img_handle.shape, boxes, clss, cls_dict)
+        list_for_show = node.publish(list_for_publish)
         nine_squares_img = summonNineSquares(cam.img_handle.shape)
-        if any(list_for_publish):
-            for detected_number in list_for_publish:
-                color = (min(int(detected_number[0]) * 25, 255),
-                         min(int(detected_number[0]) * 14, 255),
-                         min(int(detected_number[0]) * 10, 255))
+        if any(list_for_show):
+            for index,detected_number in enumerate(list_for_show):
+                color = (min(int(detected_number) * 25, 255),
+                         min(int(detected_number) * 14, 255),
+                         min(int(detected_number) * 10, 255))
                 cv2.putText(nine_squares_img,
-                            str(detected_number[0]),
-                            puzzlePosToCamPos(cam.img_handle.shape, detected_number[1]),
+                            str(detected_number),
+                            puzzlePosToCamPos(cam.img_handle.shape, index+1),
                             cv2.FONT_HERSHEY_DUPLEX, 1, color, 1)
         nine_squares_img = show_fps(nine_squares_img, fps)
+        out.write(nine_squares_img)
         cv2.imshow(WINDOW_NAME, nine_squares_img)
+        
 
         toc = time.time()
         curr_fps = 1.0 / (toc - tic)
@@ -99,6 +108,8 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
         elif key == ord('F') or key == ord('f'):  #Toggle fullscreen
             full_scrn = not full_scrn
             set_display(WINDOW_NAME, full_scrn)
+    out.release()
+     
 
 def puzzlePosToCamPos(shape, puzzle_pos):#Convert 1~9 to position on image
     try:
@@ -170,7 +181,7 @@ def summonNineSquares(shape):#As the funcion name says.
 
 class camNode():#For ROS node establish and publish
     def __init__(self):
-        #self.last_tracking_time = None
+        self.write_video = True
         self.message_to_pub = UInt8MultiArray()
         self.node = None
         self.pub = None
@@ -180,8 +191,10 @@ class camNode():#For ROS node establish and publish
         self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
 
     def publish(self,detected_list):
-        pub_list = self.__debugging(detected_list)
-        self.pub.publish(pub_list)
+        pub_message = self.__debugging(detected_list)
+        self.pub.publish(pub_message)
+        ret = [str(data) for data in pub_message.data]
+        return ret
 
     def __debugging(self,detected_list):#in detected_list index 0 stands for number detected, 
                                         #index 1 stands for position on puzzle,
@@ -201,37 +214,39 @@ class camNode():#For ROS node establish and publish
             for result in detected_list:
                 new_detected_list[result[1]-1] = int(result[0])
             self.message_to_pub.data = new_detected_list
-            print(self.message_to_pub.layout,self.message_to_pub.data,'first')
+            #print(self.message_to_pub.layout,self.message_to_pub.data,'first')
             return self.message_to_pub
 
         n_not_none_numbers = len(detected_list)
 
         if l_not_none_numbers - n_not_none_numbers > 0: #Assume no detection error,there are some numbers being covered.
-            print(self.message_to_pub.layout,self.message_to_pub.data,'case 1')
+            #print(self.message_to_pub.layout,self.message_to_pub.data,'case 1')
             return self.message_to_pub #Return list before covering and no change in last detected list
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
             for result in detected_list:
                 new_detected_list[result[1]-1] = int(result[0])
             self.message_to_pub.data = new_detected_list
-            print(self.message_to_pub.layout,self.message_to_pub.data,'case 2')
+            #print(self.message_to_pub.layout,self.message_to_pub.data,'case 2')
             return self.message_to_pub#Update and return last_detected_list 
 
 def main():
     args = parse_args()
-    abs_dir = os.path.join(os.path.abspath(r"."),'src','cam','src')
+    abs_path = os.path.dirname(os.path.abspath(__file__))
     if args.category_num <= 0:
         raise SystemExit('ERROR: bad category_num (%d)!' % args.category_num)
-    trt_dir = abs_dir + '/yolo/%s.trt' % args.model
+    trt_dir = abs_path + '/yolo/%s.trt' % args.model
     if not os.path.isfile(trt_dir):
         raise SystemExit('ERROR: file (%s.trt) not found!' % args.model)
 
+    #Setup cam
     cam = Camera(args)
     if not cam.isOpened():
         raise SystemExit('ERROR: failed to open camera!')
     
+    #Setup ROS Node
     node = camNode()
+    node.write_video = args.write_video
     node.start()
-
 
     cls_dict = get_cls_dict(args.category_num)
     vis = BBoxVisualization(cls_dict)
@@ -240,7 +255,7 @@ def main():
     open_window(
         WINDOW_NAME, 'Camera TensorRT YOLO Demo',
         cam.img_width, cam.img_height)
-    loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th=0.6, vis=vis)
+    loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th=0.7, vis=vis)
 
     cam.release()
     cv2.destroyAllWindows()
