@@ -74,7 +74,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_shape = (cam.img_handle.shape[1],cam.img_handle.shape[0])
     out = cv2.VideoWriter('result.mp4', fourcc, 30.0, video_shape)
-    while True:
+    while not rospy.is_shutdown():
         if cv2.getWindowProperty(WINDOW_NAME, 0) < 0:
             break
         img = cam.read()
@@ -186,13 +186,13 @@ def summonNineSquares(shape):#As the funcion name says.
 
 class camNode():#For ROS node establish and publish
     def __init__(self):
+        self.node = None
+        self.pub = None
         self.write_video = True
         self.message_to_pub = UInt8MultiArray()
         self.message_to_pub.data = [NONE_VALUE] * 9
         self.vanish_determinator = []
         self.confs_recorder = []
-        self.node = None
-        self.pub = None
         
     def start(self):
         self.node = rospy.init_node('cam_node')
@@ -209,7 +209,6 @@ class camNode():#For ROS node establish and publish
         self.message_to_pub.layout = time.time()
         new_detected_list = [NONE_VALUE] * 9
         confs = [NONE_VALUE] * 9 
-        l_not_none_indexs = []
         l_not_none_numbers = 0
         
         tmp_dict = {}
@@ -229,11 +228,8 @@ class camNode():#For ROS node establish and publish
         
         for index, last_result in enumerate(self.message_to_pub.data):#Caculate how many numbers is not NONE_VALUE(999)
                                                                       #in last stored data.
-            if last_result == NONE_VALUE:
-                continue
-            else:
-                l_not_none_indexs.append(index)
-                l_not_none_numbers += 1
+            if not last_result == NONE_VALUE:
+                l_not_none_numbers += 1            
         
         invalid_changed_indexs = [] #Record numbers change from number to number.(invalid change)
         covered_conter = 0 #Caculate how many numbers are no-longer detected

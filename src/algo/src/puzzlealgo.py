@@ -1,11 +1,13 @@
 import sys
 import copy
-import time
 import math
 # heapq is similar to priorty queue
 import heapq
 import argparse
 import time
+
+import rospy
+from std_msgs.msg import UInt8MultiArray
 
 
 GOAL = [1, 2, 3, 
@@ -15,10 +17,11 @@ GOAL = [1, 2, 3,
 START1 = [None, 3, 7, 
          1, 2, 8, 
          5, 6, 4]
+#d r d r u l l
 
 START = [1, 2, 3, 
-        None, 5, 6, 
-        4,7, 8]
+        4, 5, 6, 
+        None,7, 8]
 
 START_DICT = {"start": START,
                "start1":START1}
@@ -67,9 +70,13 @@ class Node(object):
         self.cost = None
         self.total_cost = None
         self.parent = None
+        self.point_to_childern = None
 
     def __repr__(self):
         return str(self.value)
+        
+    def __lt__(self, other):
+        return self.total_cost < other.total_cost
 
     def __le__(self, other):
         return self.total_cost <= other.total_cost
@@ -84,7 +91,7 @@ class PuzzleSearch(object):
 
     def _position_by_value(self, node, value):
         cells = int(math.sqrt(len(node)))
-        row_idx = node.index(value) / cells
+        row_idx = node.index(value) // cells
         col_idx = node.index(value) % cells
         return row_idx, col_idx
 
@@ -93,12 +100,13 @@ class PuzzleSearch(object):
         cells = int(math.sqrt(len(node)))
         if col_idx != 0:
             newnode = copy.deepcopy(node)
-            idx_old = cells * row_idx + col_idx
-            idx_new = cells * row_idx + col_idx-1
+            idx_old = int(cells * row_idx + col_idx)
+            idx_new = int(cells * row_idx + col_idx-1)
             new_val = node[idx_new]
             newnode[idx_old] = new_val
             newnode[idx_new] = None
-            return newnode
+            return newnode, 'left'
+        return None, None
 
     def _move_right(self, node):
         row_idx, col_idx = self._position_by_value(node, None)
@@ -106,24 +114,26 @@ class PuzzleSearch(object):
         max_col = cells-1
         if col_idx != max_col:
             newnode = copy.deepcopy(node)
-            idx_old = cells * row_idx + col_idx
-            idx_new = cells * row_idx + col_idx+1
+            idx_old = int(cells * row_idx + col_idx)
+            idx_new = int(cells * row_idx + col_idx+1)
             new_val = node[idx_new]
             newnode[idx_old] = new_val
             newnode[idx_new] = None
-            return newnode
+            return newnode, 'right'
+        return None, None
 
     def _move_up(self, node):
         row_idx, col_idx = self._position_by_value(node, None)
         cells = int(math.sqrt(len(node)))
         if row_idx != 0:
             newnode = copy.deepcopy(node)
-            idx_old = cells * row_idx + col_idx
-            idx_new = cells * (row_idx-1) + col_idx
+            idx_old = int(cells * row_idx + col_idx)
+            idx_new = int(cells * (row_idx-1) + col_idx)
             new_val = node[idx_new]
             newnode[idx_old] = new_val
             newnode[idx_new] = None
-            return newnode
+            return newnode, 'up'
+        return None, None
 
     def _move_down(self, node):
         row_idx, col_idx = self._position_by_value(node, None)
@@ -131,24 +141,36 @@ class PuzzleSearch(object):
         max_row = cells-1
         if row_idx != max_row:
             newnode = copy.deepcopy(node)
-            idx_old = cells * row_idx + col_idx
-            idx_new = cells * (row_idx+1) + col_idx
+            idx_old = int(cells * row_idx + col_idx)
+            idx_new = int(cells * (row_idx+1) + col_idx)
             new_val = node[idx_new]
             newnode[idx_old] = new_val
             newnode[idx_new] = None
-            return newnode
+            return newnode, 'down'
+        return None, None
 
     def get_children(self, node):
         tmp_nodes = []
         new_node_list = []
-        tmp_nodes.append(self._move_down(node))
-        tmp_nodes.append(self._move_up(node))
-        tmp_nodes.append(self._move_left(node))
-        tmp_nodes.append(self._move_right(node))
-        for new in tmp_nodes:
+        tmp_directions = []
+        new_directions = []
+        mvdown, mvdown_dir = self._move_down(node)
+        mvup, mvup_dir = self._move_up(node)
+        mvlf, mvlf_dir = self._move_left(node)
+        mvrt, mvrt_dir = self._move_right(node)
+        tmp_nodes.append(mvdown)
+        tmp_nodes.append(mvup)
+        tmp_nodes.append(mvlf)
+        tmp_nodes.append(mvrt)
+        tmp_directions.append(mvdown_dir)
+        tmp_directions.append(mvup_dir)
+        tmp_directions.append(mvlf_dir)
+        tmp_directions.append(mvrt_dir)
+        for index,new in enumerate(tmp_nodes):
             if new:
                 new_node_list.append(new)
-        return new_node_list
+                new_directions.append(tmp_directions[index])
+        return new_node_list,new_directions
 
     def _heuristic_manhatten(self, node, goal):
         ret = 0
@@ -190,66 +212,134 @@ class PuzzleSearch(object):
             if node.value == self.goal.value:
                 return node
 
-            tmp = self.get_children(node.value)
-            for i in tmp:
-                if i not in visited:
-                    visited.append(i)
-                    obj_node = Node(i)
+            tmp,directions = self.get_children(node.value)
+            for index,choice in enumerate(tmp):
+                if choice not in visited:
+                    visited.append(choice)
+                    obj_node = Node(choice)
                     obj_node.parent = node
-                    obj_node.cost = self._heuristic_manhatten(i, self.goal.value)
-                    obj_node.total_cost = obj_node.cost + node.total_cost
+                    obj_node.cost = self._heuristic_manhatten(choice, self.goal.value)
+                    obj_node.total_cost = obj_node.cost + node.total_cost      
+                    obj_node.point_to_childern = directions[index]
                     heapq.heappush(node_list, obj_node)
         return ret
-
-if __name__ == "__main__":
-
+        
+class algoNode():
+    def __init__(self):
+        self.node = None
+        self.pub = None
+        self.sub = None
+        self.start_cond = None
+        self.NONE_VALUE = 999
+        
+    def start(self):
+        self.node = rospy.init_node('algo_node')
+        self.pub = rospy.Publisher('algo_result', 'Need to be specified', queue_size=10)
+        self.sub = rospy.Subscriber('cam_detected', UInt8MultiArray, self.__listenerCallback)
+        
+    def goal_determine(self):
+        num_sum = 0
+        ideal_sum = 45
+        goal = []
+        for num in self.start_cond:
+            if not num == None:
+                num_sum += num
+        lacked_num = ideal_sum - num_sum
+        for i in range(9):
+            if i == lacked_num:
+                goal[i] = None
+            else:
+                goal[i] = i
+        return goal
+        
+    def publish(self, actions):
+        pub_data = UInt8MultiArray #Need to be specified again
+        pub_data.layout = time.time()
+        pub_data.data = actions
+        self.pub.publish(pub_data)
+        
+    def __listenerCallback(self, recieved_data):
+        for index,data in enumerate(recieved_data.data):
+            if data == self.NONE_VALUE:
+                recieved_data.data[index] = None
+        self.start_cond = recieved_data.data
+                
+   
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-a', action="store", dest="algo", default="astar")
     parser.add_argument('-d', action="store", dest="condition", default="start")
     parser.add_argument('-c', action="store", dest="count", type=int, default=1)
     result = parser.parse_args()
+    
+    #Setup ros node
+    ros_node = algoNode()
+    ros_node.start()
 
 
-    if result.algo in ("astar"):
-        START = START_DICT.get(result.condition) 
-        puzzle = PuzzleSearch(Node(START), Node(GOAL))
+    while (not rospy.is_shutdown() 
+           and ros_node.start_cond):
+        start_cond = ros_node.start_cond
+        goal_cond = ros_node.goal_determine()
+        puzzle = PuzzleSearch(Node(start_cond), Node(goal_cond))
         
         for i in range(result.count):
             # getattr to get fuction value
             func = getattr(puzzle, result.algo)
             res = func()
-        
+         
         order = Queue()
         reorder = Stack()
         node = res
         reorder.push(node.value)
         count = 0
+        actions = []
 
         while True:
             if not node:
                 break
             order.push(node.value)
             reorder.push(node.value)
-            count +=1
+            count +=1          
+            if node.point_to_childern == None :
+                pass
+            else:
+                actions.append(node.point_to_childern)
             node = node.parent
+            
+        actions.reverse()
+        ros_node.publish(actions)
         
-        movement = count-1
-        order.push(START)
+        # movement = count-1
+        # order.push(start_cond)
         
+        '''
         print ("To solve the puzzle : \n")
         time.sleep(0.75)
-        for i in range(count):
-            print (puzzle.rep_node(reorder.pop()))
-            time.sleep(0.75)
+        '''
+        # for i in range(count):
+            # #path = 'output.txt'
+            # #with open(path,'a') as f:
+            # #f = open(path, 'a')    
+            # #num = puzzle.rep_node(reorder.pop())
+            # str = puzzle.rep_node(reorder.pop())
+            # str = str.replace('N','0')
+            # num = [int(temp)for temp in str.split() if temp.isdigit()]
+            # print(num)
+        # print(actions)
+        
 
+        ''' 
         print ("Total movement =  %s\n") % movement
         time.sleep(0.75)
-
+        
         print ("To reverse the puzzle : \n")
         time.sleep(0.75)
 
         for i in range(count):
             print (puzzle.rep_node(order.pop()))
             time.sleep(0.75)
-        
+        '''    
+if __name__ == "__main__":
+    main()
