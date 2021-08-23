@@ -29,6 +29,7 @@ from utils.yolo_with_plugins import TrtYOLO
 
 
 WINDOW_NAME = 'ROSTrtYOLODemo'
+NONE_VALUE = 999
 
 
 def parse_args():
@@ -80,7 +81,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
 
-        list_for_publish = generateListForPublish(cam.img_handle.shape, boxes, clss, cls_dict)
+        list_for_publish = generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
         list_for_show = node.publish(list_for_publish)
         nine_squares_img = summonNineSquares(cam.img_handle.shape)
         if any(list_for_show):
@@ -152,13 +153,16 @@ def positionDetermine(shape, x, y): #up left for 1,up mid for 2,up right for 3
     except Exception as e:
         print(repr(e))
 
-def generateListForPublish(shape, boxes, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
+def generateListForPublish(shape, boxes, confs, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
     detected_objects = []
     classes = np.int8(classes)
     for index,box in enumerate(boxes):
         xavg = floor((box[1] + box[3]) / 2)
         yavg = floor((box[0] + box[2]) / 2)
-        detected_object = [cls_dict[classes[index]],positionDetermine(shape,xavg,yavg),(xavg, yavg)]
+        detected_object = {'number':cls_dict[classes[index]],
+                           'conf':confs[index],
+                           'pos':positionDetermine(shape,xavg,yavg)}
+                           #'axes':(xavg, yavg)}
         detected_objects.append(detected_object)
     return detected_objects
             
@@ -196,38 +200,64 @@ class camNode():#For ROS node establish and publish
         ret = [str(data) for data in pub_message.data]
         return ret
 
-    def __debugging(self,detected_list):#in detected_list index 0 stands for number detected, 
-                                        #index 1 stands for position on puzzle,
-                                        #index 2 stands for detected position(camera 2D axis).
-                                        #Warning!! This code may be useless
+    def __debugging(self,detected_list):#Warning!! This code may be useless
+                                        
         self.message_to_pub.layout = time.time()
-        new_detected_list = [999] * 9
+        new_detected_list = [NONE_VALUE] * 9
         l_not_none_indexs = []
         l_not_none_numbers = 0
-        for index,last_result in enumerate(self.message_to_pub.data):
-            if last_result == 999:
+        
+        tmp_dict = {}
+        for index, number in enumerate(detected_list):#Purge duplicate numbers,left only with highest conference.
+            if number['number'] not in tmp_dict:
+                tmp_dict[number['number']] = [(number['conf'], index)]
+            else:
+                tmp_dict[number['number']].append((number['conf'], index))
+                tmp_dict[number['number']] = sorted(tmp_dict[number['number']], key=lambda x:x[0])
+        for item in tmp_dict.items():
+            if len(item[1]) == 1:
+                continue
+            else:
+                for i in range(len(item[1])-1):
+                    detected_list[item[1][i][1]] = None
+        detected_list = [item for item in detected_list if not item == None]
+        
+        for index, last_result in enumerate(self.message_to_pub.data):#Caculate how many numbers is not NONE_VALUE(999)
+                                                                      #in last stored data.
+            if last_result == NONE_VALUE:
                 continue
             else:
                 l_not_none_indexs.append(index)
                 l_not_none_numbers += 1
+                
         if l_not_none_numbers == 0: #first step in
-            for result in detected_list:
-                new_detected_list[result[1]-1] = int(result[0])
             self.message_to_pub.data = new_detected_list
-            #print(self.message_to_pub.layout,self.message_to_pub.data,'first')
             return self.message_to_pub
+        
+        #changed_counter = 0 
+        covered_conter = 0　#Caculate how many numbers are no longer detected 
+        for result in detected_list:
+            new_detected_list[result['pos']] = int(result['number'])
+        for index, detect_number in enumerate(new_detected_list):
+            if detect_number == NONE_VALUE and not self.message_to_pub.data[index] == detect_number:
+                covered_conter += 1
+            #elif not detect_number == NONE_VALUE and not self.message_to_pub.data[index] == detect_number:
+            #    changed_counter += 1
+            
+        n_not_none_numbers = len(detected_list) #Caculate how many numbers is not NONE_VALUE(999)
+                                                #in new recieved data.
 
-        n_not_none_numbers = len(detected_list)
-
-        if l_not_none_numbers - n_not_none_numbers > 0: #Assume no detection error,there are some numbers being covered.
-            #print(self.message_to_pub.layout,self.message_to_pub.data,'case 1')
+        if l_not_none_numbers - n_not_none_numbers > 0 and covered_conter > 1: #Some numbers are covered
+            for index, new_num in enumerate(new_detected_list):
+                if not new_num == NONE_VALUE:
+                    if new_num in self.message_to_pub.data: 
+                        self.message_to_pub.data[self.message_to_pub.data.index(new_num)] = NONE_VALUE
+                    self.message_to_pub.data[index] = new_num #update old data but not alternate
             return self.message_to_pub #Return list before covering and no change in last detected list
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
-            for result in detected_list:
-                new_detected_list[result[1]-1] = int(result[0])
             self.message_to_pub.data = new_detected_list
-            #print(self.message_to_pub.layout,self.message_to_pub.data,'case 2')
             return self.message_to_pub#Update and return last_detected_list 
+        
 
 def main():
     args = parse_args()
