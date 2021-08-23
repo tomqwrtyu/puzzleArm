@@ -69,6 +69,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     full_scrn = False
     fps = 0.0
     tic = time.time()
+
     #Setup opencv video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_shape = (cam.img_handle.shape[1],cam.img_handle.shape[0])
@@ -187,6 +188,9 @@ class camNode():#For ROS node establish and publish
     def __init__(self):
         self.write_video = True
         self.message_to_pub = UInt8MultiArray()
+        self.message_to_pub.data = [NONE_VALUE] * 9
+        self.vanish_determinator = []
+        self.confs_recorder = []
         self.node = None
         self.pub = None
         
@@ -204,6 +208,7 @@ class camNode():#For ROS node establish and publish
                                         
         self.message_to_pub.layout = time.time()
         new_detected_list = [NONE_VALUE] * 9
+        confs = [NONE_VALUE] * 9 
         l_not_none_indexs = []
         l_not_none_numbers = 0
         
@@ -229,34 +234,52 @@ class camNode():#For ROS node establish and publish
             else:
                 l_not_none_indexs.append(index)
                 l_not_none_numbers += 1
-                
-        if l_not_none_numbers == 0: #first step in
-            self.message_to_pub.data = new_detected_list
-            return self.message_to_pub
         
-        #changed_counter = 0 
-        covered_conter = 0　#Caculate how many numbers are no longer detected 
-        for result in detected_list:
-            new_detected_list[result['pos']] = int(result['number'])
+        invalid_changed_indexs = [] #Record numbers change from number to number.(invalid change)
+        covered_conter = 0 #Caculate how many numbers are no-longer detected
+        new_vanish_determinator = []
+        for result in detected_list: #Unpack recieved data
+            new_detected_list[result['pos']-1] = int(result['number'])
+            confs[result['pos']-1] = result['conf']
         for index, detect_number in enumerate(new_detected_list):
-            if detect_number == NONE_VALUE and not self.message_to_pub.data[index] == detect_number:
+            if detect_number == NONE_VALUE and not self.message_to_pub.data[index] == NONE_VALUE:
                 covered_conter += 1
-            #elif not detect_number == NONE_VALUE and not self.message_to_pub.data[index] == detect_number:
-            #    changed_counter += 1
+                new_vanish_determinator.append((index, self.message_to_pub.data[index]))
+            elif(not detect_number == NONE_VALUE 
+                 and not self.message_to_pub.data[index] == detect_number
+                 and not self.message_to_pub.data[index] == NONE_VALUE):
+                invalid_changed_indexs.append(index)
+
+        if any(self.vanish_determinator):
+            for record in self.vanish_determinator:
+                if new_detected_list[record[0]] == record[1]:
+                    self.vanish_determinator.remove(record) #Covered but not removed
+                if record in new_vanish_determinator:
+                    new_vanish_determinator.remove(record) #Remove vanished
+
+            for index,num in self.vanish_determinator:
+                if index in invalid_changed_indexs and confs[index] >= self.confs_recorder[index]:
+                    invalid_changed_indexs.remove(index) #Remove valid change(removed)
+
+        for new_record in new_vanish_determinator:
+            self.vanish_determinator.append(new_record)
+        self.confs_recorder = confs
             
         n_not_none_numbers = len(detected_list) #Caculate how many numbers is not NONE_VALUE(999)
                                                 #in new recieved data.
 
-        if l_not_none_numbers - n_not_none_numbers > 0 and covered_conter > 1: #Some numbers are covered
+        if l_not_none_numbers - n_not_none_numbers > 0 and not covered_conter == 0: #Some numbers are covered or vanished
             for index, new_num in enumerate(new_detected_list):
-                if not new_num == NONE_VALUE:
+                if not new_num == NONE_VALUE and index not in invalid_changed_indexs:
                     if new_num in self.message_to_pub.data: 
                         self.message_to_pub.data[self.message_to_pub.data.index(new_num)] = NONE_VALUE
                     self.message_to_pub.data[index] = new_num #update old data but not alternate
             return self.message_to_pub #Return list before covering and no change in last detected list
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
-            self.message_to_pub.data = new_detected_list
-            return self.message_to_pub#Update and return last_detected_list 
+            for index, new_num in enumerate(new_detected_list):
+                if index not in invalid_changed_indexs:
+                    self.message_to_pub.data[index] = new_num
+            return self.message_to_pub #Update and return last_detected_list 
         
 
 def main():
