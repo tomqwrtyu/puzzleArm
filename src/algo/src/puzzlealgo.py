@@ -231,6 +231,7 @@ class algoNode():
         self.sub = None
         self.start_cond = None
         self.NONE_VALUE = 999
+        self.time_stamp = None
         
     def start(self):
         self.node = rospy.init_node('algo_node')
@@ -245,6 +246,8 @@ class algoNode():
             if not num == None:
                 num_sum += num
         lacked_num = ideal_sum - num_sum
+        if lacked_num > 9:
+            return None
         for i in range(9):
             if i == lacked_num:
                 goal[i] = None
@@ -262,7 +265,10 @@ class algoNode():
         for index,data in enumerate(recieved_data.data):
             if data == self.NONE_VALUE:
                 recieved_data.data[index] = None
+        if not self.time_stamp and self.time_stamp == recieved_data.layout:
+            return None
         self.start_cond = recieved_data.data
+        self.time_stamp = recieved_data.layout
                 
    
 def main():
@@ -276,12 +282,18 @@ def main():
     #Setup ros node
     ros_node = algoNode()
     ros_node.start()
+    start_cond = None
 
 
     while (not rospy.is_shutdown() 
            and ros_node.start_cond):
-        start_cond = ros_node.start_cond
+        if start_cond == ros_node.start_cond and not start_cond:
+            continue
+        else:
+            start_cond = ros_node.start_cond
         goal_cond = ros_node.goal_determine()
+        if goal_cond == None:
+            continue
         puzzle = PuzzleSearch(Node(start_cond), Node(goal_cond))
         
         for i in range(result.count):
