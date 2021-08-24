@@ -15,22 +15,14 @@ import numpy as np
 import cv2
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
-import rospy
-from std_msgs.msg import String
-from std_msgs.msg import Float32MultiArray
-from std_msgs.msg import UInt8MultiArray
-from cam.srv import *
-
 from utils.yolo_classes import get_cls_dict
 from utils.camera import add_camera_args, Camera
 from utils.display import open_window, set_display, show_fps
 from utils.visualization import BBoxVisualization
 from utils.yolo_with_plugins import TrtYOLO
-
+from utils.yolo_ros_puzzle import camNode
 
 WINDOW_NAME = 'ROSTrtYOLODemo'
-NONE_VALUE = 999
-
 
 def parse_args():
     """Parse input arguments."""
@@ -82,7 +74,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
 
-        list_for_publish = generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
+        list_for_publish = node.generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
         list_for_show = node.publish(list_for_publish)
         nine_squares_img = summonNineSquares(cam.img_handle.shape)
         if any(list_for_show):
@@ -126,46 +118,6 @@ def puzzlePosToCamPos(shape, puzzle_pos):#Convert 1~9 to position on image
             raise ValueError("Error value, should be in the range from 1~9")
     except Exception as e:
        print(repr(e))
-
-
-def positionDetermine(shape, x, y): #up left for 1,up mid for 2,up right for 3
-                                    #left for 4,mid for 5,right for 6
-                                    #down left for 7,down mid for 8,down right for 9
-    try:
-        examine_axes_list = []
-        oneThirdOfX = floor(shape[0]/3)
-        oneThirdOfY = floor(shape[1]/3)
-        examine_x = [0,0]
-        examine_y = [0,0]
-        for i in range(3):
-            j = 0
-            examine_x[0] = examine_x[1]
-            examine_x[1] += oneThirdOfX
-            examine_y = [0,0]
-            while(j < 3):
-                j += 1
-                examine_y[0] = examine_y[1]
-                examine_y[1] += oneThirdOfY
-                if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
-                    return i*3+j
-                else:
-                    continue
-        raise Exception("Unexpected Error.")
-    except Exception as e:
-        print(repr(e))
-
-def generateListForPublish(shape, boxes, confs, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
-    detected_objects = []
-    classes = np.int8(classes)
-    for index,box in enumerate(boxes):
-        xavg = floor((box[1] + box[3]) / 2)
-        yavg = floor((box[0] + box[2]) / 2)
-        detected_object = {'number':cls_dict[classes[index]],
-                           'conf':confs[index],
-                           'pos':positionDetermine(shape,xavg,yavg)}
-                           #'axes':(xavg, yavg)}
-        detected_objects.append(detected_object)
-    return detected_objects
             
 def summonNineSquares(shape):#As the funcion name says.
     img = np.zeros((shape[0], shape[1], 3), np.uint8)
@@ -183,99 +135,6 @@ def summonNineSquares(shape):#As the funcion name says.
         y += oneThirdOfY
         cv2.line(img, (y,0), (y,xmax), (0,0,0), 3)
     return img
-
-class camNode():#For ROS node establish and publish
-    def __init__(self):
-        self.node = None
-        self.pub = None
-        self.write_video = True
-        self.message_to_pub = UInt8MultiArray()
-        self.message_to_pub.data = [NONE_VALUE] * 9
-        self.vanish_determinator = []
-        self.confs_recorder = []
-        
-    def start(self):
-        self.node = rospy.init_node('cam_node')
-        self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
-
-    def publish(self,detected_list):
-        pub_message = self.__debugging(detected_list)
-        self.pub.publish(pub_message)
-        ret = [str(data) for data in pub_message.data]
-        return ret
-
-    def __debugging(self,detected_list):#Warning!! This code may be useless
-                                        
-        self.message_to_pub.layout = time.time()
-        new_detected_list = [NONE_VALUE] * 9
-        confs = [NONE_VALUE] * 9 
-        l_not_none_numbers = 0
-        
-        tmp_dict = {}
-        for index, number in enumerate(detected_list):#Purge duplicate numbers,left only with highest conference.
-            if number['number'] not in tmp_dict:
-                tmp_dict[number['number']] = [(number['conf'], index)]
-            else:
-                tmp_dict[number['number']].append((number['conf'], index))
-                tmp_dict[number['number']] = sorted(tmp_dict[number['number']], key=lambda x:x[0])
-        for item in tmp_dict.items():
-            if len(item[1]) == 1:
-                continue
-            else:
-                for i in range(len(item[1])-1):
-                    detected_list[item[1][i][1]] = None
-        detected_list = [item for item in detected_list if not item == None]
-        
-        for index, last_result in enumerate(self.message_to_pub.data):#Caculate how many numbers is not NONE_VALUE(999)
-                                                                      #in last stored data.
-            if not last_result == NONE_VALUE:
-                l_not_none_numbers += 1            
-        
-        invalid_changed_indexs = [] #Record numbers change from number to number.(invalid change)
-        covered_conter = 0 #Caculate how many numbers are no-longer detected
-        new_vanish_determinator = []
-        for result in detected_list: #Unpack recieved data
-            new_detected_list[result['pos']-1] = int(result['number'])
-            confs[result['pos']-1] = result['conf']
-        for index, detect_number in enumerate(new_detected_list):
-            if detect_number == NONE_VALUE and not self.message_to_pub.data[index] == NONE_VALUE:
-                covered_conter += 1
-                new_vanish_determinator.append((index, self.message_to_pub.data[index]))
-            elif(not detect_number == NONE_VALUE 
-                 and not self.message_to_pub.data[index] == detect_number
-                 and not self.message_to_pub.data[index] == NONE_VALUE):
-                invalid_changed_indexs.append(index)
-
-        if any(self.vanish_determinator):
-            for record in self.vanish_determinator:
-                if new_detected_list[record[0]] == record[1]:
-                    self.vanish_determinator.remove(record) #Covered but not removed
-                if record in new_vanish_determinator:
-                    new_vanish_determinator.remove(record) #Remove vanished
-
-            for index,num in self.vanish_determinator:
-                if index in invalid_changed_indexs and confs[index] >= self.confs_recorder[index]:
-                    invalid_changed_indexs.remove(index) #Remove valid change(removed)
-
-        for new_record in new_vanish_determinator:
-            self.vanish_determinator.append(new_record)
-        self.confs_recorder = confs
-            
-        n_not_none_numbers = len(detected_list) #Caculate how many numbers is not NONE_VALUE(999)
-                                                #in new recieved data.
-
-        if l_not_none_numbers - n_not_none_numbers > 0 and not covered_conter == 0: #Some numbers are covered or vanished
-            for index, new_num in enumerate(new_detected_list):
-                if not new_num == NONE_VALUE and index not in invalid_changed_indexs:
-                    if new_num in self.message_to_pub.data: 
-                        self.message_to_pub.data[self.message_to_pub.data.index(new_num)] = NONE_VALUE
-                    self.message_to_pub.data[index] = new_num #update old data but not alternate
-            return self.message_to_pub #Return list before covering and no change in last detected list
-        else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
-            for index, new_num in enumerate(new_detected_list):
-                if index not in invalid_changed_indexs:
-                    self.message_to_pub.data[index] = new_num
-            return self.message_to_pub #Update and return last_detected_list 
         
 
 def main():
