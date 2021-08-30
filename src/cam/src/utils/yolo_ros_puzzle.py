@@ -4,8 +4,12 @@ from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import UInt8MultiArray
 from cam.srv import *
 
+import numpy as np
+from math import floor
+import time
+
 NONE_VALUE = 999
-INVALID_BOX_RATIO = 0.8
+INVALID_BOX_RATIO = 0.5
 
 class camNode():#For ROS node establish and publish
     def __init__(self):
@@ -26,22 +30,22 @@ class camNode():#For ROS node establish and publish
         detected_objects = []
         classes = np.int8(classes)
         for index,box in enumerate(boxes):
-            wh_ratio = __ratioCaculate(box[1], box[0], box[3], box[2])
-            print(wh_ratio)
-            if (wh_ratio * INVALID_BOX_RATIO > self.average_wh_ratio_recorder['avg']):
-                print(wh_ratio,'GG_RATIO')
+            wh_ratio = self.__ratioCaculate(box[1], box[0], box[3], box[2])
+            if self.average_wh_ratio_recorder == None:
+                pass
+            elif (wh_ratio * INVALID_BOX_RATIO > self.average_wh_ratio_recorder['avg']):
                 continue
-            __ratioUpdate(wh_ratio)
+            self.__ratioUpdate(wh_ratio)
             xavg = floor((box[1] + box[3]) / 2)
             yavg = floor((box[0] + box[2]) / 2)
             detected_object = {'number':cls_dict[classes[index]],
                                'conf':confs[index],
-                               'pos':__positionDetermine(shape,xavg,yavg)}
+                               'pos':self.__positionDetermine(shape,xavg,yavg)}
                                #'axes':(xavg, yavg)}
             detected_objects.append(detected_object)
         return detected_objects
         
-    def __positionDetermine(shape, x, y): #up left for 1,up mid for 2,up right for 3
+    def __positionDetermine(self, shape, x, y): #up left for 1,up mid for 2,up right for 3
                                     #left for 4,mid for 5,right for 6
                                     #down left for 7,down mid for 8,down right for 9
         try:
@@ -72,14 +76,16 @@ class camNode():#For ROS node establish and publish
         width = ymax - ymin
         return (width / height)
         
-    def __ratioUpdate(self, new_ratio)
+    def __ratioUpdate(self, new_ratio):
         if self.average_wh_ratio_recorder == None:
-            self.average_wh_ratio_recorder = {'avg':new_ratio, 'num_boxes':1)
+            if new_ratio < 0.7:
+                return 0
+            self.average_wh_ratio_recorder = {'avg':new_ratio, 'num_boxes':1}
         else:
             avg = self.average_wh_ratio_recorder['avg'] 
-            num_boxes = self.average_wh_ratio_recorder['num_boxes'] + 1
-            self.average_wh_ratio_recorder['avg'] = avg + (new_ratio / num_boxes)
-            self.average_wh_ratio_recorder['num_boxes'] = num_boxes 
+            num_boxes = self.average_wh_ratio_recorder['num_boxes'] 
+            self.average_wh_ratio_recorder['avg'] = (avg * num_boxes + new_ratio) / (num_boxes + 1)
+            self.average_wh_ratio_recorder['num_boxes'] = num_boxes + 1
 
     def publish(self,detected_list):
         pub_message = self.__debugging(detected_list)
@@ -159,3 +165,4 @@ class camNode():#For ROS node establish and publish
                     self.message_to_pub.data[index] = new_num
                     
         return self.message_to_pub 
+
