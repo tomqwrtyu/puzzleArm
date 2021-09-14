@@ -40,25 +40,24 @@ class camNode():#For ROS node establish and publish
             yavg = floor((box[0] + box[2]) / 2)
             detected_object = {'number':cls_dict[classes[index]],
                                'conf':confs[index],
-                               'pos':self.__positionDetermine(shape,xavg,yavg)}
+                               'pos':self.__positionDetermine(0, shape[0], 0, shape[1], xavg, yavg)}
                                #'axes':(xavg, yavg)}
             detected_objects.append(detected_object)
         return detected_objects
         
-    def __positionDetermine(self, shape, x, y): #up left for 1,up mid for 2,up right for 3
+    def __positionDetermine(self, xmin, xmax, ymin, ymax, x, y): #up left for 1,up mid for 2,up right for 3
                                     #left for 4,mid for 5,right for 6
                                     #down left for 7,down mid for 8,down right for 9
         try:
             examine_axes_list = []
-            oneThirdOfX = floor(shape[0]/3)
-            oneThirdOfY = floor(shape[1]/3)
-            examine_x = [0,0]
-            examine_y = [0,0]
+            oneThirdOfX = floor((xmax - xmin)/3)
+            oneThirdOfY = floor((ymax - ymin)/3)
+            examine_x = [xmin,xmin]
             for i in range(3):
                 j = 0
                 examine_x[0] = examine_x[1]
                 examine_x[1] += oneThirdOfX
-                examine_y = [0,0]
+                examine_y = [ymin,ymin]
                 while(j < 3):
                     j += 1
                     examine_y[0] = examine_y[1]

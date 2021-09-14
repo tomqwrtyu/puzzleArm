@@ -75,6 +75,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
         if img is None:
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
+        ###plate_position = PlatePositionDetection(img)
 
         list_for_publish = node.generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
         list_for_show = node.publish(list_for_publish)

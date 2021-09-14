@@ -7,7 +7,7 @@ import argparse
 import time
 
 import rospy
-from std_msgs.msg import UInt8MultiArray
+from std_msgs.msg import StringArray
 
 
 GOAL = [1, 2, 3, 
@@ -256,8 +256,7 @@ class algoNode():
         return goal
         
     def publish(self, actions):
-        pub_data = UInt8MultiArray #Need to be specified again
-        pub_data.layout = time.time()
+        pub_data = StringArray() #Need to be specified again
         pub_data.data = actions
         self.pub.publish(pub_data)
         
