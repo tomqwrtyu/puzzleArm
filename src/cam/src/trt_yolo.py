@@ -30,7 +30,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=desc)
     parser = add_camera_args(parser)
     parser.add_argument(
-        '-c', '--category_num', type=int, default=80,
+        '-c', '--category_num', type=int, default=9,
         help='number of object categories [80]')
     parser.add_argument(
         '-m', '--model', type=str, required=True,

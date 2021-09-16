@@ -17,8 +17,8 @@ class camNode():#For ROS node establish and publish
         self.pub = None
         self.write_video = None
         self.is_initialized = False
-        self.xminmax = {'min' = None, 'max' = None}
-        self.yminmax = {'min' = None, 'max' = None}
+        self.xminmax = {'min': None, 'max': None}
+        self.yminmax = {'min': None, 'max': None}
         self.message_to_pub = UInt8MultiArray()
         self.message_to_pub.data = [NONE_VALUE] * 9
         self.vanish_determinator = []
@@ -37,12 +37,12 @@ class camNode():#For ROS node establish and publish
         for item in detected_list:
             xlist.append(item['axes'][0])
             ylist.append(item['axes'][1])
-        self.xminmax['min'] = min(xlist)
-        self.xminmax['max'] = max(xlist)
-        self.yminmax['min'] = min(ylist)
-        self.yminmax['max'] = max(ylist)
+        self.xminmax['min'] = min(xlist) - int((max(xlist) - min(xlist))/4)
+        self.xminmax['max'] = max(xlist) + int((max(xlist) - min(xlist))/4)
+        self.yminmax['min'] = min(ylist) - int((max(ylist) - min(ylist))/4)
+        self.yminmax['max'] = max(ylist) + int((max(ylist) - min(ylist))/4)
         for item in detected_list:
-            if item['number'] != self.__positionDetermine(item['axes'][0], item['axes'][1])
+            if not str(item['number']) == str(self.__positionDetermine(item['axes'][0], item['axes'][1])):
                 return 1
         self.is_initialized = True
         return 0
@@ -94,10 +94,12 @@ class camNode():#For ROS node establish and publish
                     examine_y[0] = examine_y[1]
                     examine_y[1] += oneThirdOfY
                     if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
+                        if not self.is_initialized:
+                            return 10 - (i*3+j)
                         return i*3+j
                     else:
                         continue
-            raise Exception("Unexpected Error.")
+            raise 'Unexpected error.'
         except Exception as e:
             print(repr(e))
     

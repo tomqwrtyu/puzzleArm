@@ -5,7 +5,6 @@ This script demonstrates how to do real-time object detection with
 TensorRT optimized YOLO engine.
 """
 
-
 import os
 import time
 import argparse
@@ -13,7 +12,6 @@ from math import floor
 import numpy as np
 
 import cv2
-import matplotlib.pyplot as plt
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
 from utils.yolo_classes import get_cls_dict
@@ -38,7 +36,7 @@ def parse_args():
         '-c', '--category_num', type=int, default=9,
         help='number of object categories [9]')
     parser.add_argument(
-        '-m', '--model', type=str, default='yolov4-tiny_40_0814',
+        '-m', '--model', type=str, default='yolov4-tiny_78_0914',
         help=('[yolov3-tiny|yolov3|yolov3-spp|yolov4-tiny|yolov4|'
               'yolov4-csp|yolov4x-mish]-[{dimension}], where '
               '{dimension} could be either a single number (e.g. '
@@ -77,54 +75,53 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
         img = vis.draw_bboxes(img, boxes, confs, clss)
-        img = show_fps(img, fps)
-        plt.subplot(1, 2, 1)
-        plt.imshow(img)
-        plt.title('Original',fontsize = 8)
+        #img = show_fps(img, fps)
 
         list_for_publish = node.generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
-        if not node.is_initialized :    
+        if not node.is_initialized :
             ret = node.initializeBoxPosition(list_for_publish)
             if ret == 1:
                 cv2.putText(img,
                             'Initializing failed. Please put 9 numbers to right places.',
-                            (cam.img_handle.shape[0]/2, cam.img_handle.shape[1]/3),
-                            cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
-            continue
-        list_for_show = node.publish(list_for_publish)
-        nine_squares_img = summonNineSquares(cam.img_handle.shape)
-        if any(list_for_show):
-            for index,detected_number in enumerate(list_for_show):
-                color = (min(int(detected_number) * 25, 255),
-                         min(int(detected_number) * 14, 255),
-                         min(int(detected_number) * 10, 255))
-                cv2.putText(nine_squares_img,
-                            str(detected_number),
-                            puzzlePosToCamPos(cam.img_handle.shape, index+1),
-                            cv2.FONT_HERSHEY_DUPLEX, 1, color, 1)
-        nine_squares_img = show_fps(nine_squares_img, fps)
-        if node.write_video:
-            out.write(nine_squares_img)
-        #cv2.imshow(WINDOW_NAME, nine_squares_img)
-        plt.subplot(1, 2, 2)
-        plt.imshow(nine_squares_img)
-        plt.title('Processed',fontsize = 8)
-        plt.xticks([])
-        plt.yticks([])
-        plt.show()
+                            (int(cam.img_handle.shape[1]/10), int(cam.img_handle.shape[0]/10)),
+                            cv2.FONT_HERSHEY_DUPLEX, 0.6, (0, 0, 200), 1)
+                cv2.imshow(WINDOW_NAME, img)
+                key = cv2.waitKey(1)
+                if key == 27:  # ESC key: quit program
+                    break
+                elif key == ord('F') or key == ord('f'):  #Toggle fullscreen
+                    full_scrn = not full_scrn
+                    set_display(WINDOW_NAME, full_scrn)
+                continue
+        else:
+            list_for_show = node.publish(list_for_publish)
+            nine_squares_img = summonNineSquares(cam.img_handle.shape)
+            if any(list_for_show):
+                for index,detected_number in enumerate(list_for_show):
+                    color = (min(int(detected_number) * 25, 255),
+                             min(int(detected_number) * 14, 255),
+                             min(int(detected_number) * 10, 255))
+                    cv2.putText(nine_squares_img,
+                                str(detected_number),
+                                puzzlePosToCamPos(cam.img_handle.shape, index+1),
+                                cv2.FONT_HERSHEY_DUPLEX, 1, color, 1)
+            nine_squares_img = show_fps(nine_squares_img, fps)
+            if node.write_video:
+                out.write(nine_squares_img)
+            cv2.imshow(WINDOW_NAME, nine_squares_img)
         
 
-        toc = time.time()
-        curr_fps = 1.0 / (toc - tic)
-        # calculate an exponentially decaying average of fps number
-        fps = curr_fps if fps == 0.0 else (fps*0.95 + curr_fps*0.05)
-        tic = toc
-        key = cv2.waitKey(1)
-        if key == 27:  # ESC key: quit program
-            break
-        elif key == ord('F') or key == ord('f'):  #Toggle fullscreen
-            full_scrn = not full_scrn
-            set_display(WINDOW_NAME, full_scrn)
+            toc = time.time()
+            curr_fps = 1.0 / (toc - tic)
+            # calculate an exponentially decaying average of fps number
+            fps = curr_fps if fps == 0.0 else (fps*0.95 + curr_fps*0.05)
+            tic = toc
+            key = cv2.waitKey(1)
+            if key == 27:  # ESC key: quit program
+                break
+            elif key == ord('F') or key == ord('f'):  #Toggle fullscreen
+                full_scrn = not full_scrn
+                set_display(WINDOW_NAME, full_scrn)
     out.release()
      
 
