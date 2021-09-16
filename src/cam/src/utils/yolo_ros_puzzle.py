@@ -15,7 +15,10 @@ class camNode():#For ROS node establish and publish
     def __init__(self):
         self.node = None
         self.pub = None
-        self.write_video = True
+        self.write_video = None
+        self.is_initialized = False
+        self.xminmax = {'min' = None, 'max' = None}
+        self.yminmax = {'min' = None, 'max' = None}
         self.message_to_pub = UInt8MultiArray()
         self.message_to_pub.data = [NONE_VALUE] * 9
         self.vanish_determinator = []
@@ -25,6 +28,26 @@ class camNode():#For ROS node establish and publish
     def start(self):
         self.node = rospy.init_node('cam_node')
         self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
+        
+    def initializeBoxPosition(self,detected_list):
+        if not len(detected_list) == 9:
+            return 1
+        xlist = []
+        ylist = []
+        for item in detected_list:
+            xlist.append(item['axes'][0])
+            ylist.append(item['axes'][1])
+        self.xminmax['min'] = min(xlist)
+        self.xminmax['max'] = max(xlist)
+        self.yminmax['min'] = min(ylist)
+        self.yminmax['max'] = max(ylist)
+        for item in detected_list:
+            if item['number'] != self.__positionDetermine(item['axes'][0], item['axes'][1])
+                return 1
+        self.is_initialized = True
+        return 0
+            
+    
         
     def generateListForPublish(self, shape, boxes, confs, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
         detected_objects = []
@@ -38,16 +61,24 @@ class camNode():#For ROS node establish and publish
             self.__ratioUpdate(wh_ratio)
             xavg = floor((box[1] + box[3]) / 2)
             yavg = floor((box[0] + box[2]) / 2)
-            detected_object = {'number':cls_dict[classes[index]],
+            if not self.is_initialized:
+                detected_object = {'number':cls_dict[classes[index]],
                                'conf':confs[index],
-                               'pos':self.__positionDetermine(0, shape[0], 0, shape[1], xavg, yavg)}
-                               #'axes':(xavg, yavg)}
+                               'axes':(xavg, yavg)}
+            else:
+                detected_object = {'number':cls_dict[classes[index]],
+                                   'conf':confs[index],
+                                   'pos':self.__positionDetermine(xavg, yavg)}
             detected_objects.append(detected_object)
         return detected_objects
         
-    def __positionDetermine(self, xmin, xmax, ymin, ymax, x, y): #up left for 1,up mid for 2,up right for 3
-                                    #left for 4,mid for 5,right for 6
-                                    #down left for 7,down mid for 8,down right for 9
+    def __positionDetermine(self, x, y): #up left for 1,up mid for 2,up right for 3
+                                                                 #left for 4,mid for 5,right for 6
+                                                                 #down left for 7,down mid for 8,down right for 9
+        xmin = self.xminmax['min']
+        xmax = self.xminmax['max']
+        ymin = self.yminmax['min']
+        ymax = self.yminmax['max']
         try:
             examine_axes_list = []
             oneThirdOfX = floor((xmax - xmin)/3)

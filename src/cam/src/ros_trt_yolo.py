@@ -13,6 +13,7 @@ from math import floor
 import numpy as np
 
 import cv2
+import matplotlib.pyplot as plt
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
 from utils.yolo_classes import get_cls_dict
@@ -75,9 +76,21 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
         if img is None:
             break
         boxes, confs, clss = trt_yolo.detect(img, conf_th) #boxes : [ymin,xmin,ymax,xmax]
-        ###plate_position = PlatePositionDetection(img)
+        img = vis.draw_bboxes(img, boxes, confs, clss)
+        img = show_fps(img, fps)
+        plt.subplot(1, 2, 1)
+        plt.imshow(img)
+        plt.title('Original',fontsize = 8)
 
         list_for_publish = node.generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
+        if not node.is_initialized :    
+            ret = node.initializeBoxPosition(list_for_publish)
+            if ret == 1:
+                cv2.putText(img,
+                            'Initializing failed. Please put 9 numbers to right places.',
+                            (cam.img_handle.shape[0]/2, cam.img_handle.shape[1]/3),
+                            cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0), 1)
+            continue
         list_for_show = node.publish(list_for_publish)
         nine_squares_img = summonNineSquares(cam.img_handle.shape)
         if any(list_for_show):
@@ -90,8 +103,15 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                             puzzlePosToCamPos(cam.img_handle.shape, index+1),
                             cv2.FONT_HERSHEY_DUPLEX, 1, color, 1)
         nine_squares_img = show_fps(nine_squares_img, fps)
-        out.write(nine_squares_img)
-        cv2.imshow(WINDOW_NAME, nine_squares_img)
+        if node.write_video:
+            out.write(nine_squares_img)
+        #cv2.imshow(WINDOW_NAME, nine_squares_img)
+        plt.subplot(1, 2, 2)
+        plt.imshow(nine_squares_img)
+        plt.title('Processed',fontsize = 8)
+        plt.xticks([])
+        plt.yticks([])
+        plt.show()
         
 
         toc = time.time()
