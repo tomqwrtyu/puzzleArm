@@ -25,10 +25,22 @@ class camNode():#For ROS node establish and publish
         self.vanish_determinator = []
         self.confs_recorder = []
         self.average_wh_ratio_recorder = None
+        #self.goal_position = None
         
     def start(self):
         self.node = rospy.init_node('cam_node')
         self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
+        #service = rospy.Service('GetTheGoal', goal, self.__request_handler)
+        
+    def reset(self):
+        self.is_initialized = False
+        self.xminmax = {'min': None, 'max': None}
+        self.yminmax = {'min': None, 'max': None}
+        self.message_to_pub.data = [NONE_VALUE] * 9
+        self.vanish_determinator = []
+        self.confs_recorder = []
+        self.average_wh_ratio_recorder = None
+        #self.goal_position = None
         
     def initializeBoxPosition(self,detected_list):
         if not len(detected_list) == 9:
@@ -196,11 +208,18 @@ class camNode():#For ROS node establish and publish
                 elif (new_num == NONE_VALUE 
                       and l_not_none_numbers == SCALE_OF_PLATE
                       and l_not_none_numbers - n_not_none_numbers == 1): #Right after initialing, there will be one number removed.
+                    self.goal_position = index
                     self.message_to_pub.data[index] = new_num
+                    
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
             for index, new_num in enumerate(new_detected_list):
                 if index not in invalid_changed_positions:
                     self.message_to_pub.data[index] = new_num
                     
         return self.message_to_pub 
+     
+    # def __request_handler(self,request):
+        # response = goalResponse()
+        # response.goal_pos = self.goal_position
+        # return response
 

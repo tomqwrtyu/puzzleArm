@@ -8,6 +8,7 @@ import time
 
 import rospy
 from std_msgs.msg import StringArray
+from cam.srv import *
 
 
 GOAL = [1, 2, 3, 
@@ -268,6 +269,15 @@ class algoNode():
             return None
         self.start_cond = recieved_data.data
         self.time_stamp = recieved_data.layout
+        
+    def get_goal_position(self):
+        rospy.wait_for_service('GetTheGoal')
+        try:
+            service_func = rospy.ServiceProxy('GetTheGoal', goal)
+            return service_func(True)
+        except rospy.ServiceException:
+            rospy.loginfo('Service call failed.')
+            
                 
    
 def main():

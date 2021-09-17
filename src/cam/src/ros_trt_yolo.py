@@ -21,6 +21,8 @@ from utils.visualization import BBoxVisualization
 from utils.yolo_with_plugins import TrtYOLO
 from utils.yolo_ros_puzzle import camNode
 
+from tkinter.messagebox import askyesno
+
 import rospy
 
 WINDOW_NAME = 'ROSTrtYOLODemo'
@@ -122,6 +124,12 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             elif key == ord('F') or key == ord('f'):  #Toggle fullscreen
                 full_scrn = not full_scrn
                 set_display(WINDOW_NAME, full_scrn)
+            elif key == ord('R') or key == ord('r'):  #Reinitialize plate position (!!!Not sure if the messagebox working!!!)
+                answer = askyesno(title = 'Confirmation',
+                                  message = 'Are you sure that you want to reset?')
+                if answer:
+                    node.reset()
+                
     out.release()
      
 
