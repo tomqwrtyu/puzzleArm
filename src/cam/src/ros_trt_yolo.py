@@ -104,7 +104,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                     cv2.putText(nine_squares_img,
                                 str(detected_number),
                                 puzzlePosToCamPos(cam.img_handle.shape, index+1),
-                                cv2.FONT_HERSHEY_DUPLEX, 1, color, 1)
+                                cv2.FONT_HERSHEY_DUPLEX, 1.2, color, 1)
             nine_squares_img = show_fps(nine_squares_img, fps)
             if node.write_video:
                 out.write(nine_squares_img)

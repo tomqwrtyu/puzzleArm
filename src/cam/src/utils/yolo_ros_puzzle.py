@@ -10,6 +10,7 @@ import time
 
 NONE_VALUE = 999
 INVALID_BOX_RATIO = 0.5
+SCALE_OF_PLATE = 9
 
 class camNode():#For ROS node establish and publish
     def __init__(self):
@@ -73,35 +74,32 @@ class camNode():#For ROS node establish and publish
         return detected_objects
         
     def __positionDetermine(self, x, y): #up left for 1,up mid for 2,up right for 3
-                                                                 #left for 4,mid for 5,right for 6
-                                                                 #down left for 7,down mid for 8,down right for 9
+                                         #left for 4,mid for 5,right for 6
+                                         #down left for 7,down mid for 8,down right for 9
         xmin = self.xminmax['min']
         xmax = self.xminmax['max']
         ymin = self.yminmax['min']
         ymax = self.yminmax['max']
-        try:
-            examine_axes_list = []
-            oneThirdOfX = floor((xmax - xmin)/3)
-            oneThirdOfY = floor((ymax - ymin)/3)
-            examine_x = [xmin,xmin]
-            for i in range(3):
-                j = 0
-                examine_x[0] = examine_x[1]
-                examine_x[1] += oneThirdOfX
-                examine_y = [ymin,ymin]
-                while(j < 3):
-                    j += 1
-                    examine_y[0] = examine_y[1]
-                    examine_y[1] += oneThirdOfY
-                    if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
-                        if not self.is_initialized:
-                            return 10 - (i*3+j)
-                        return i*3+j
-                    else:
-                        continue
-            raise 'Unexpected error.'
-        except Exception as e:
-            print(repr(e))
+        examine_axes_list = []
+        oneThirdOfX = floor((xmax - xmin)/3)
+        oneThirdOfY = floor((ymax - ymin)/3)
+        examine_x = [xmin,xmin]
+        for i in range(3):
+            j = 0
+            examine_x[0] = examine_x[1]
+            examine_x[1] += oneThirdOfX
+            examine_y = [ymin,ymin]
+            while(j < 3):
+                j += 1
+                examine_y[0] = examine_y[1]
+                examine_y[1] += oneThirdOfY
+                if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
+                    if not self.is_initialized:
+                        return 10 - (i*3+j)
+                    return i*3+j
+                else:
+                    continue
+        return None
     
     def __ratioCaculate(self, xmin, ymin, xmax, ymax): #this 
         height = xmax - xmin
@@ -152,34 +150,38 @@ class camNode():#For ROS node establish and publish
             if not last_result == NONE_VALUE:
                 l_not_none_numbers += 1            
         
-        invalid_changed_indexs = [] #Record numbers change from number to number.(invalid change)
-        covered_conter = 0 #Caculate how many numbers are no-longer detected
+        invalid_changed_positions = [] #Record numbers change from number to number.(invalid change)
+        covered_conter = 0 #Counting how many numbers are no-longer detected
         new_vanish_determinator = []
-        for result in detected_list: #Unpack recieved data
-            new_detected_list[result['pos']-1] = int(result['number'])
-            confs[result['pos']-1] = result['conf']
+        for result in detected_list: #Unpack recieved data, ignoring objects outside the plate
+            if not result['pos'] == None: #If pos outputs 'None',it means detected object is outside the plate.
+                new_detected_list[result['pos']-1] = int(result['number'])
+                confs[result['pos']-1] = result['conf']
         for index, detect_number in enumerate(new_detected_list):
-            if detect_number == NONE_VALUE and not self.message_to_pub.data[index] == NONE_VALUE:
+            if (detect_number == NONE_VALUE 
+                and not self.message_to_pub.data[index] == NONE_VALUE):
                 covered_conter += 1
-                new_vanish_determinator.append((index, self.message_to_pub.data[index]))
+                new_vanish_determinator.append((index, self.message_to_pub.data[index]))#Store the number was on the position and vanished. 
             elif(not detect_number == NONE_VALUE 
                  and not self.message_to_pub.data[index] == detect_number
                  and not self.message_to_pub.data[index] == NONE_VALUE):
-                invalid_changed_indexs.append(index)
+                invalid_changed_positions.append(index)
 
         if any(self.vanish_determinator):
             for record in self.vanish_determinator:
                 if new_detected_list[record[0]] == record[1]:
-                    self.vanish_determinator.remove(record) #Covered but not removed
+                    self.vanish_determinator.remove(record) #Item still remains, which means it was covered but not removed.
                 if record in new_vanish_determinator:
-                    new_vanish_determinator.remove(record) #Remove vanished
+                    new_vanish_determinator.remove(record) #Remove items still vanishing 
+                                                           #(if we don't remove, there will be duplicate item in vanish_determinator)
 
-            for index,num in self.vanish_determinator:
-                if index in invalid_changed_indexs and confs[index] >= self.confs_recorder[index]:
-                    invalid_changed_indexs.remove(index) #Remove valid change(removed)
-
-        for new_record in new_vanish_determinator:
-            self.vanish_determinator.append(new_record)
+            for position,_ in self.vanish_determinator:
+                if position in invalid_changed_positions and confs[position] >= self.confs_recorder[position]:
+                    invalid_changed_positions.remove(position) #Remove valid changing(which means removed)
+                    
+        if any(new_vanish_determinator):
+            for new_record in new_vanish_determinator:
+                self.vanish_determinator.append(new_record)
         self.confs_recorder = confs
             
         n_not_none_numbers = len(detected_list) #Caculate how many numbers is not NONE_VALUE(999)
@@ -187,13 +189,17 @@ class camNode():#For ROS node establish and publish
 
         if l_not_none_numbers - n_not_none_numbers > 0 and not covered_conter == 0: #Some numbers are covered or vanished
             for index, new_num in enumerate(new_detected_list):
-                if not new_num == NONE_VALUE and index not in invalid_changed_indexs:
+                if not new_num == NONE_VALUE and index not in invalid_changed_positions:
                     if new_num in self.message_to_pub.data: 
                         self.message_to_pub.data[self.message_to_pub.data.index(new_num)] = NONE_VALUE
                     self.message_to_pub.data[index] = new_num #update old data but not alternate
+                elif (new_num == NONE_VALUE 
+                      and l_not_none_numbers == SCALE_OF_PLATE
+                      and l_not_none_numbers - n_not_none_numbers == 1): #Right after initialing, there will be one number removed.
+                    self.message_to_pub.data[index] = new_num
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
             for index, new_num in enumerate(new_detected_list):
-                if index not in invalid_changed_indexs:
+                if index not in invalid_changed_positions:
                     self.message_to_pub.data[index] = new_num
                     
         return self.message_to_pub 
