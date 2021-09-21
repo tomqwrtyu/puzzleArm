@@ -11,9 +11,9 @@ from std_msgs.msg import StringArray
 from cam.srv import *
 
 
-GOAL = [1, 2, 3, 
-        4, 5, 6, 
-        7, 8, None]
+INITIAL_STATE = [1, 2, 3, 
+                 4, 5, 6, 
+                 7, 8, 9]
 
 START1 = [None, 3, 7, 
          1, 2, 8, 
@@ -270,13 +270,13 @@ class algoNode():
         self.start_cond = recieved_data.data
         self.time_stamp = recieved_data.layout
         
-    def get_goal_position(self):
-        rospy.wait_for_service('GetTheGoal')
-        try:
-            service_func = rospy.ServiceProxy('GetTheGoal', goal)
-            return service_func(True)
-        except rospy.ServiceException:
-            rospy.loginfo('Service call failed.')
+    # def get_goal_position(self):
+        # rospy.wait_for_service('GetTheGoal')
+        # try:
+            # service_func = rospy.ServiceProxy('GetTheGoal', goal)
+            # return service_func(True)
+        # except rospy.ServiceException:
+            # rospy.loginfo('Service call failed.')
             
                 
    

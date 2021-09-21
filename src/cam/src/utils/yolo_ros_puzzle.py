@@ -208,7 +208,7 @@ class camNode():#For ROS node establish and publish
                 elif (new_num == NONE_VALUE 
                       and l_not_none_numbers == SCALE_OF_PLATE
                       and l_not_none_numbers - n_not_none_numbers == 1): #Right after initialing, there will be one number removed.
-                    self.goal_position = index
+                    #self.goal_position = index
                     self.message_to_pub.data[index] = new_num
                     
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
@@ -216,6 +216,7 @@ class camNode():#For ROS node establish and publish
                 if index not in invalid_changed_positions:
                     self.message_to_pub.data[index] = new_num
                     
+        self.message_to_pub.data.reverse()
         return self.message_to_pub 
      
     # def __request_handler(self,request):
