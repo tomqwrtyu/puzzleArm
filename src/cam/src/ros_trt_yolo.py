@@ -97,7 +97,8 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                 continue
         else:
             list_for_show = node.publish(list_for_publish)
-            nine_squares_img = summonNineSquares(cam.img_handle.shape)
+            list_for_show.reverse()
+            nine_squares_img = summonNineSquares(cam.img_handle.shape)    
             if any(list_for_show):
                 for index,detected_number in enumerate(list_for_show):
                     color = (min(int(detected_number) * 25, 255),

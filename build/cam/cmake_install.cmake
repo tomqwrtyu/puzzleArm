@@ -38,7 +38,11 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/cam/srv" TYPE FILE FILES "/home/nvidia/puzzleArm/src/cam/srv/num_state.srv")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/cam/msg" TYPE FILE FILES "/home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/cam/srv" TYPE FILE FILES "/home/nvidia/puzzleArm/src/cam/srv/goal.srv")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

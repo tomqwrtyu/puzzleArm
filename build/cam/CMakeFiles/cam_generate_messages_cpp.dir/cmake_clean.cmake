@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_cpp"
-  "/home/nvidia/puzzleArm/devel/include/cam/num_state.h"
+  "/home/nvidia/puzzleArm/devel/include/cam/UIntArray.h"
+  "/home/nvidia/puzzleArm/devel/include/cam/goal.h"
 )
 
 # Per-language clean rules from dependency scanning.

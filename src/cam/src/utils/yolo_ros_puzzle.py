@@ -1,7 +1,7 @@
 import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
-from std_msgs.msg import UInt8MultiArray
+from cam.msg import UIntArray
 from cam.srv import *
 
 import numpy as np
@@ -20,7 +20,7 @@ class camNode():#For ROS node establish and publish
         self.is_initialized = False
         self.xminmax = {'min': None, 'max': None}
         self.yminmax = {'min': None, 'max': None}
-        self.message_to_pub = UInt8MultiArray()
+        self.message_to_pub = UIntArray()
         self.message_to_pub.data = [NONE_VALUE] * 9
         self.vanish_determinator = []
         self.confs_recorder = []
@@ -29,7 +29,7 @@ class camNode():#For ROS node establish and publish
         
     def start(self):
         self.node = rospy.init_node('cam_node')
-        self.pub = rospy.Publisher('cam_detected', UInt8MultiArray, queue_size=10)
+        self.pub = rospy.Publisher('cam_detected', UIntArray, queue_size=10)
         #service = rospy.Service('GetTheGoal', goal, self.__request_handler)
         
     def reset(self):
@@ -137,7 +137,7 @@ class camNode():#For ROS node establish and publish
 
     def __debugging(self,detected_list):#Warning!! This code may be useless
                                         
-        self.message_to_pub.layout = time.time()
+        self.message_to_pub.time_stamp = time.time()
         new_detected_list = [NONE_VALUE] * 9
         confs = [NONE_VALUE] * 9 
         l_not_none_numbers = 0
@@ -209,14 +209,12 @@ class camNode():#For ROS node establish and publish
                       and l_not_none_numbers == SCALE_OF_PLATE
                       and l_not_none_numbers - n_not_none_numbers == 1): #Right after initialing, there will be one number removed.
                     #self.goal_position = index
-                    self.message_to_pub.data[index] = new_num
+                    self.message_to_pub.data[index] = NONE_VALUE
                     
         else: #Assume no detection error,there are some numbers being discovered or no obstacle interfering the detection.
             for index, new_num in enumerate(new_detected_list):
                 if index not in invalid_changed_positions:
                     self.message_to_pub.data[index] = new_num
-                    
-        self.message_to_pub.data.reverse()
         return self.message_to_pub 
      
     # def __request_handler(self,request):

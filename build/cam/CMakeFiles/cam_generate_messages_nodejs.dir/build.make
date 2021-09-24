@@ -53,16 +53,23 @@ CMAKE_BINARY_DIR = /home/nvidia/puzzleArm/build
 # Include the progress variables for this target.
 include cam/CMakeFiles/cam_generate_messages_nodejs.dir/progress.make
 
-cam/CMakeFiles/cam_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/num_state.js
+cam/CMakeFiles/cam_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg/UIntArray.js
+cam/CMakeFiles/cam_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/goal.js
 
 
-/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/num_state.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
-/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/num_state.js: /home/nvidia/puzzleArm/src/cam/srv/num_state.srv
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from cam/num_state.srv"
-	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/nvidia/puzzleArm/src/cam/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv
+/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg/UIntArray.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
+/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg/UIntArray.js: /home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from cam/UIntArray.msg"
+	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg
+
+/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/goal.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
+/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/goal.js: /home/nvidia/puzzleArm/src/cam/srv/goal.srv
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from cam/goal.srv"
+	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/nvidia/puzzleArm/src/cam/srv/goal.srv -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv
 
 cam_generate_messages_nodejs: cam/CMakeFiles/cam_generate_messages_nodejs
-cam_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/num_state.js
+cam_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg/UIntArray.js
+cam_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/goal.js
 cam_generate_messages_nodejs: cam/CMakeFiles/cam_generate_messages_nodejs.dir/build.make
 
 .PHONY : cam_generate_messages_nodejs

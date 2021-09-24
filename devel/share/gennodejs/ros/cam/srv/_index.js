@@ -1,8 +1,8 @@
 
 "use strict";
 
-let num_state = require('./num_state.js')
+let goal = require('./goal.js')
 
 module.exports = {
-  num_state: num_state,
+  goal: goal,
 };

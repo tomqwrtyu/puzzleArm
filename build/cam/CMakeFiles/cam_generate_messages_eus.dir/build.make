@@ -53,21 +53,28 @@ CMAKE_BINARY_DIR = /home/nvidia/puzzleArm/build
 # Include the progress variables for this target.
 include cam/CMakeFiles/cam_generate_messages_eus.dir/progress.make
 
-cam/CMakeFiles/cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l
+cam/CMakeFiles/cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg/UIntArray.l
+cam/CMakeFiles/cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/goal.l
 cam/CMakeFiles/cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/manifest.l
 
 
-/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l: /opt/ros/melodic/lib/geneus/gen_eus.py
-/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l: /home/nvidia/puzzleArm/src/cam/srv/num_state.srv
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating EusLisp code from cam/num_state.srv"
-	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/nvidia/puzzleArm/src/cam/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv
+/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg/UIntArray.l: /opt/ros/melodic/lib/geneus/gen_eus.py
+/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg/UIntArray.l: /home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating EusLisp code from cam/UIntArray.msg"
+	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg
+
+/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/goal.l: /opt/ros/melodic/lib/geneus/gen_eus.py
+/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/goal.l: /home/nvidia/puzzleArm/src/cam/srv/goal.srv
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating EusLisp code from cam/goal.srv"
+	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/nvidia/puzzleArm/src/cam/srv/goal.srv -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv
 
 /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/manifest.l: /opt/ros/melodic/lib/geneus/gen_eus.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating EusLisp manifest code for cam"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating EusLisp manifest code for cam"
 	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py -m -o /home/nvidia/puzzleArm/devel/share/roseus/ros/cam cam std_msgs
 
 cam_generate_messages_eus: cam/CMakeFiles/cam_generate_messages_eus
-cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/num_state.l
+cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg/UIntArray.l
+cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/goal.l
 cam_generate_messages_eus: /home/nvidia/puzzleArm/devel/share/roseus/ros/cam/manifest.l
 cam_generate_messages_eus: cam/CMakeFiles/cam_generate_messages_eus.dir/build.make
 

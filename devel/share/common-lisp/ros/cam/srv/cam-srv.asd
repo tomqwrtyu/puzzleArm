@@ -4,6 +4,6 @@
 (defsystem "cam-srv"
   :depends-on (:roslisp-msg-protocol :roslisp-utils )
   :components ((:file "_package")
-    (:file "num_state" :depends-on ("_package_num_state"))
-    (:file "_package_num_state" :depends-on ("_package"))
+    (:file "goal" :depends-on ("_package_goal"))
+    (:file "_package_goal" :depends-on ("_package"))
   ))

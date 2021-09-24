@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import copy
 import math
@@ -7,11 +8,12 @@ import argparse
 import time
 
 import rospy
-from std_msgs.msg import StringArray
+from std_msgs.msg import String
+from cam.msg import UIntArray
 from cam.srv import *
 
 
-INITIAL_STATE = [1, 2, 3, 
+GOAL_STATE = [1, 2, 3, 
                  4, 5, 6, 
                  7, 8, 9]
 
@@ -199,14 +201,13 @@ class PuzzleSearch(object):
     def astar(self, node_list=None):
         ret = None
         if not node_list:
-            self.start.cost = self._heuristic_manhatten(self.start.value, 
-                    self.goal.value)
+            self.start.cost = self._heuristic_manhatten(self.start.value, self.goal.value)
             self.start.total_cost  = 0
             node_list = []
             heapq.heapify(node_list)
             heapq.heappush(node_list, self.start)
             visited = []
-        
+
         while node_list:
             node = heapq.heappop(node_list)
 
@@ -236,39 +237,43 @@ class algoNode():
         
     def start(self):
         self.node = rospy.init_node('algo_node')
-        self.pub = rospy.Publisher('algo_result', 'Need to be specified', queue_size=10)
-        self.sub = rospy.Subscriber('cam_detected', UInt8MultiArray, self.__listenerCallback)
+        self.pub = rospy.Publisher('algo_result', String, queue_size=10)
+        self.sub = rospy.Subscriber('cam_detected', UIntArray, self.__listenerCallback)
         
     def goal_determine(self):
+        if self.start_cond == None:
+            return None
         num_sum = 0
         ideal_sum = 45
-        goal = []
+        goal = [None] * 9
         for num in self.start_cond:
             if not num == None:
                 num_sum += num
         lacked_num = ideal_sum - num_sum
         if lacked_num > 9:
             return None
-        for i in range(9):
-            if i == lacked_num:
+        for i in range(len(self.start_cond)):
+            if i == (lacked_num - 1):
                 goal[i] = None
             else:
-                goal[i] = i
+                goal[i] = i + 1
         return goal
         
     def publish(self, actions):
-        pub_data = StringArray() #Need to be specified again
+        pub_data =  String() #Need to be specified again
         pub_data.data = actions
         self.pub.publish(pub_data)
         
     def __listenerCallback(self, recieved_data):
-        for index,data in enumerate(recieved_data.data):
+        recieved_data_list = list(recieved_data.data)
+        recieved_data_list.reverse()
+        for index,data in enumerate(recieved_data_list):
             if data == self.NONE_VALUE:
-                recieved_data.data[index] = None
-        if not self.time_stamp and self.time_stamp == recieved_data.layout:
+                recieved_data_list[index] = None
+        if not self.time_stamp and self.time_stamp == recieved_data.time_stamp:
             return None
-        self.start_cond = recieved_data.data
-        self.time_stamp = recieved_data.layout
+        self.start_cond = recieved_data_list
+        self.time_stamp = recieved_data.time_stamp
         
     # def get_goal_position(self):
         # rospy.wait_for_service('GetTheGoal')
@@ -291,24 +296,21 @@ def main():
     #Setup ros node
     ros_node = algoNode()
     ros_node.start()
-    start_cond = None
 
 
-    while (not rospy.is_shutdown() 
-           and ros_node.start_cond):
-        if start_cond == ros_node.start_cond and not start_cond:
+    while (not rospy.is_shutdown()):
+        if ros_node.start_cond == None:
             continue
-        else:
-            start_cond = ros_node.start_cond
         goal_cond = ros_node.goal_determine()
         if goal_cond == None:
             continue
-        puzzle = PuzzleSearch(Node(start_cond), Node(goal_cond))
+        puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(goal_cond))
         
         for i in range(result.count):
             # getattr to get fuction value
             func = getattr(puzzle, result.algo)
             res = func()
+
          
         order = Queue()
         reorder = Stack()
@@ -330,7 +332,9 @@ def main():
             node = node.parent
             
         actions.reverse()
-        ros_node.publish(actions)
+        actions_string = ",".join(actions)
+        print(actions,actions_string)
+        ros_node.publish(actions_string)
         
         # movement = count-1
         # order.push(start_cond)
