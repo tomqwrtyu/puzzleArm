@@ -28,6 +28,8 @@ START = [1, 2, 3,
 
 START_DICT = {"start": START,
                "start1":START1}
+               
+CAPITAL_CONSTANT = 65
 
 class Stack:
   "A container with a last-in-first-out (LIFO) queuing policy."
@@ -232,6 +234,7 @@ class algoNode():
         self.pub = None
         self.sub = None
         self.start_cond = None
+        self.blank_space = None
         self.NONE_VALUE = 999
         self.time_stamp = None
         
@@ -246,9 +249,11 @@ class algoNode():
         num_sum = 0
         ideal_sum = 45
         goal = [None] * 9
-        for num in self.start_cond:
+        for index, num in enumerate(self.start_cond):
             if not num == None:
                 num_sum += num
+            else:
+                self.blank_space = index
         lacked_num = ideal_sum - num_sum
         if lacked_num > 9:
             return None
@@ -261,7 +266,7 @@ class algoNode():
         
     def publish(self, actions):
         pub_data =  String() #Need to be specified again
-        pub_data.data = actions
+        pub_data.data = __transferOutput(actions)
         self.pub.publish(pub_data)
         
     def __listenerCallback(self, recieved_data):
@@ -274,6 +279,24 @@ class algoNode():
             return None
         self.start_cond = recieved_data_list
         self.time_stamp = recieved_data.time_stamp
+        
+    def __transferOutput(self, actions):
+        start = None
+        space = self.blank_space
+        transfered_actions = []
+        for act in actions:
+            if act == 'up':
+                start = space - 3 
+            elif act == 'down':
+                start = space + 3
+            elif act == 'left':
+                start = space - 1
+            elif act == 'right':
+                start = space + 1
+            transfered_actions.append(chr(start+CAPITAL_CONSTANT)+chr(space+CAPITAL_CONSTANT))
+            space = start
+        return transfered_actions
+            
         
     # def get_goal_position(self):
         # rospy.wait_for_service('GetTheGoal')
