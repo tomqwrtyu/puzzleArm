@@ -8,7 +8,7 @@ import argparse
 import time
 
 import rospy
-from std_msgs.msg import String
+from algo.msg import stringArray
 from cam.msg import UIntArray
 from cam.srv import *
 
@@ -96,8 +96,11 @@ class PuzzleSearch(object):
 
     def _position_by_value(self, node, value):
         cells = int(math.sqrt(len(node)))
-        row_idx = node.index(value) // cells
-        col_idx = node.index(value) % cells
+        try:
+            row_idx = node.index(value) // cells
+            col_idx = node.index(value) % cells
+        except:
+            return None, None
         return row_idx, col_idx
 
     def _move_left(self, node):
@@ -240,7 +243,7 @@ class algoNode():
         
     def start(self):
         self.node = rospy.init_node('algo_node')
-        self.pub = rospy.Publisher('algo_result', String, queue_size=10)
+        self.pub = rospy.Publisher('algo_result', stringArray, queue_size=10)
         self.sub = rospy.Subscriber('cam_detected', UIntArray, self.__listenerCallback)
         
     def goal_determine(self):
@@ -265,16 +268,22 @@ class algoNode():
         return goal
         
     def publish(self, actions):
-        pub_data =  String() #Need to be specified again
-        pub_data.data = __transferOutput(actions)
+        pub_data =  stringArray() #Need to be specified again
+        pub_data.time_stamp = time.time()
+        pub_data.data = self.__transferOutput(actions)
         self.pub.publish(pub_data)
         
     def __listenerCallback(self, recieved_data):
         recieved_data_list = list(recieved_data.data)
         recieved_data_list.reverse()
+        none_count = 0
         for index,data in enumerate(recieved_data_list):
             if data == self.NONE_VALUE:
+                if none_count > 1: #We do not expect puzzle with two holes
+                    self.start_cond == None
+                    return None
                 recieved_data_list[index] = None
+                none_count += 1
         if not self.time_stamp and self.time_stamp == recieved_data.time_stamp:
             return None
         self.start_cond = recieved_data_list
@@ -293,8 +302,9 @@ class algoNode():
                 start = space - 1
             elif act == 'right':
                 start = space + 1
-            transfered_actions.append(chr(start+CAPITAL_CONSTANT)+chr(space+CAPITAL_CONSTANT))
-            space = start
+            if not start == None: 
+                transfered_actions.append(chr(start+CAPITAL_CONSTANT)+' '+chr(space+CAPITAL_CONSTANT))
+                space = start
         return transfered_actions
             
         
@@ -356,8 +366,8 @@ def main():
             
         actions.reverse()
         actions_string = ",".join(actions)
-        print(actions,actions_string)
-        ros_node.publish(actions_string)
+        #print(actions,actions_string)
+        ros_node.publish(actions)
         
         # movement = count-1
         # order.push(start_cond)

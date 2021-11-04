@@ -6,5 +6,6 @@
 # testing this directory and lists subdirectories to be tested as well.
 subdirs("gtest")
 subdirs("algo")
+subdirs("arm")
 subdirs("core")
 subdirs("cam")

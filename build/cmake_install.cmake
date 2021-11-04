@@ -132,6 +132,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/nvidia/puzzleArm/build/gtest/cmake_install.cmake")
   include("/home/nvidia/puzzleArm/build/algo/cmake_install.cmake")
+  include("/home/nvidia/puzzleArm/build/arm/cmake_install.cmake")
   include("/home/nvidia/puzzleArm/build/core/cmake_install.cmake")
   include("/home/nvidia/puzzleArm/build/cam/cmake_install.cmake")
 

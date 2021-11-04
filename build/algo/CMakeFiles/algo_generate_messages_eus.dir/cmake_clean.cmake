@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/algo_generate_messages_eus"
+  "/home/nvidia/puzzleArm/devel/share/roseus/ros/algo/msg/stringArray.l"
   "/home/nvidia/puzzleArm/devel/share/roseus/ros/algo/srv/num_state.l"
   "/home/nvidia/puzzleArm/devel/share/roseus/ros/algo/manifest.l"
 )

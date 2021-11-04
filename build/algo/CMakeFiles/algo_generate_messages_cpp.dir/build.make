@@ -53,17 +53,25 @@ CMAKE_BINARY_DIR = /home/nvidia/puzzleArm/build
 # Include the progress variables for this target.
 include algo/CMakeFiles/algo_generate_messages_cpp.dir/progress.make
 
+algo/CMakeFiles/algo_generate_messages_cpp: /home/nvidia/puzzleArm/devel/include/algo/stringArray.h
 algo/CMakeFiles/algo_generate_messages_cpp: /home/nvidia/puzzleArm/devel/include/algo/num_state.h
 
+
+/home/nvidia/puzzleArm/devel/include/algo/stringArray.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
+/home/nvidia/puzzleArm/devel/include/algo/stringArray.h: /home/nvidia/puzzleArm/src/algo/msg/stringArray.msg
+/home/nvidia/puzzleArm/devel/include/algo/stringArray.h: /opt/ros/melodic/share/gencpp/msg.h.template
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from algo/stringArray.msg"
+	cd /home/nvidia/puzzleArm/src/algo && /home/nvidia/puzzleArm/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/nvidia/puzzleArm/src/algo/msg/stringArray.msg -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/include/algo -e /opt/ros/melodic/share/gencpp/cmake/..
 
 /home/nvidia/puzzleArm/devel/include/algo/num_state.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
 /home/nvidia/puzzleArm/devel/include/algo/num_state.h: /home/nvidia/puzzleArm/src/algo/srv/num_state.srv
 /home/nvidia/puzzleArm/devel/include/algo/num_state.h: /opt/ros/melodic/share/gencpp/msg.h.template
 /home/nvidia/puzzleArm/devel/include/algo/num_state.h: /opt/ros/melodic/share/gencpp/srv.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from algo/num_state.srv"
-	cd /home/nvidia/puzzleArm/src/algo && /home/nvidia/puzzleArm/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/nvidia/puzzleArm/src/algo/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/include/algo -e /opt/ros/melodic/share/gencpp/cmake/..
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating C++ code from algo/num_state.srv"
+	cd /home/nvidia/puzzleArm/src/algo && /home/nvidia/puzzleArm/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/nvidia/puzzleArm/src/algo/srv/num_state.srv -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/include/algo -e /opt/ros/melodic/share/gencpp/cmake/..
 
 algo_generate_messages_cpp: algo/CMakeFiles/algo_generate_messages_cpp
+algo_generate_messages_cpp: /home/nvidia/puzzleArm/devel/include/algo/stringArray.h
 algo_generate_messages_cpp: /home/nvidia/puzzleArm/devel/include/algo/num_state.h
 algo_generate_messages_cpp: algo/CMakeFiles/algo_generate_messages_cpp.dir/build.make
 

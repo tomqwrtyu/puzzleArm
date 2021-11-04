@@ -1,8 +1,8 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "algo: 0 messages, 1 services")
+message(STATUS "algo: 1 messages, 1 services")
 
-set(MSG_I_FLAGS "-Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg")
+set(MSG_I_FLAGS "-Ialgo:/home/nvidia/puzzleArm/src/algo/msg;-Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg")
 
 # Find all generators
 find_package(gencpp REQUIRED)
@@ -17,6 +17,11 @@ add_custom_target(algo_generate_messages ALL)
 
 
 
+get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" NAME_WE)
+add_custom_target(_algo_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "algo" "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" ""
+)
+
 get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" NAME_WE)
 add_custom_target(_algo_generate_messages_check_deps_${_filename}
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "algo" "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" ""
@@ -28,6 +33,12 @@ add_custom_target(_algo_generate_messages_check_deps_${_filename}
 
 ### Section generating for lang: gencpp
 ### Generating Messages
+_generate_msg_cpp(algo
+  "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/algo
+)
 
 ### Generating Services
 _generate_srv_cpp(algo
@@ -49,6 +60,8 @@ add_custom_target(algo_generate_messages_cpp
 add_dependencies(algo_generate_messages algo_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" NAME_WE)
+add_dependencies(algo_generate_messages_cpp _algo_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" NAME_WE)
 add_dependencies(algo_generate_messages_cpp _algo_generate_messages_check_deps_${_filename})
 
@@ -61,6 +74,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS algo_generate_messages_cpp)
 
 ### Section generating for lang: geneus
 ### Generating Messages
+_generate_msg_eus(algo
+  "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/algo
+)
 
 ### Generating Services
 _generate_srv_eus(algo
@@ -82,6 +101,8 @@ add_custom_target(algo_generate_messages_eus
 add_dependencies(algo_generate_messages algo_generate_messages_eus)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" NAME_WE)
+add_dependencies(algo_generate_messages_eus _algo_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" NAME_WE)
 add_dependencies(algo_generate_messages_eus _algo_generate_messages_check_deps_${_filename})
 
@@ -94,6 +115,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS algo_generate_messages_eus)
 
 ### Section generating for lang: genlisp
 ### Generating Messages
+_generate_msg_lisp(algo
+  "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/algo
+)
 
 ### Generating Services
 _generate_srv_lisp(algo
@@ -115,6 +142,8 @@ add_custom_target(algo_generate_messages_lisp
 add_dependencies(algo_generate_messages algo_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" NAME_WE)
+add_dependencies(algo_generate_messages_lisp _algo_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" NAME_WE)
 add_dependencies(algo_generate_messages_lisp _algo_generate_messages_check_deps_${_filename})
 
@@ -127,6 +156,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS algo_generate_messages_lisp)
 
 ### Section generating for lang: gennodejs
 ### Generating Messages
+_generate_msg_nodejs(algo
+  "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/algo
+)
 
 ### Generating Services
 _generate_srv_nodejs(algo
@@ -148,6 +183,8 @@ add_custom_target(algo_generate_messages_nodejs
 add_dependencies(algo_generate_messages algo_generate_messages_nodejs)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" NAME_WE)
+add_dependencies(algo_generate_messages_nodejs _algo_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" NAME_WE)
 add_dependencies(algo_generate_messages_nodejs _algo_generate_messages_check_deps_${_filename})
 
@@ -160,6 +197,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS algo_generate_messages_nodejs)
 
 ### Section generating for lang: genpy
 ### Generating Messages
+_generate_msg_py(algo
+  "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/algo
+)
 
 ### Generating Services
 _generate_srv_py(algo
@@ -181,6 +224,8 @@ add_custom_target(algo_generate_messages_py
 add_dependencies(algo_generate_messages algo_generate_messages_py)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg" NAME_WE)
+add_dependencies(algo_generate_messages_py _algo_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv" NAME_WE)
 add_dependencies(algo_generate_messages_py _algo_generate_messages_check_deps_${_filename})
 

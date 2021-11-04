@@ -176,6 +176,7 @@ def main():
         raise SystemExit('ERROR: file (%s.trt) not found!' % args.model)
 
     #Setup cam
+    args.usb = 1
     cam = Camera(args)
     if not cam.isOpened():
         raise SystemExit('ERROR: failed to open camera!')

@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/algo_generate_messages_cpp"
+  "/home/nvidia/puzzleArm/devel/include/algo/stringArray.h"
   "/home/nvidia/puzzleArm/devel/include/algo/num_state.h"
 )
 

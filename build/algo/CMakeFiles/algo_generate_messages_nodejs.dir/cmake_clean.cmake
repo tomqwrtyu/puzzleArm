@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/algo_generate_messages_nodejs"
+  "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/stringArray.js"
   "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js"
 )
 

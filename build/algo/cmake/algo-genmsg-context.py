@@ -1,11 +1,11 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = ""
+messages_str = "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
 services_str = "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv"
 pkg_name = "algo"
 dependencies_str = "std_msgs"
 langs = "gencpp;geneus;genlisp;gennodejs;genpy"
-dep_include_paths_str = "std_msgs;/opt/ros/melodic/share/std_msgs/cmake/../msg"
+dep_include_paths_str = "algo;/home/nvidia/puzzleArm/src/algo/msg;std_msgs;/opt/ros/melodic/share/std_msgs/cmake/../msg"
 PYTHON_EXECUTABLE = "/usr/bin/python2"
 package_has_static_sources = '' == 'TRUE'
 genmsg_check_deps_script = "/opt/ros/melodic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py"

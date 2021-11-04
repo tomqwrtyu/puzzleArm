@@ -294,6 +294,12 @@ algo_BINARY_DIR:STATIC=/home/nvidia/puzzleArm/build/algo
 algo_SOURCE_DIR:STATIC=/home/nvidia/puzzleArm/src/algo
 
 //Value Computed by CMake
+arm_BINARY_DIR:STATIC=/home/nvidia/puzzleArm/build/arm
+
+//Value Computed by CMake
+arm_SOURCE_DIR:STATIC=/home/nvidia/puzzleArm/src/arm
+
+//Value Computed by CMake
 cam_BINARY_DIR:STATIC=/home/nvidia/puzzleArm/build/cam
 
 //Value Computed by CMake
@@ -524,7 +530,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

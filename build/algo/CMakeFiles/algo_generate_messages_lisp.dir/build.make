@@ -53,15 +53,22 @@ CMAKE_BINARY_DIR = /home/nvidia/puzzleArm/build
 # Include the progress variables for this target.
 include algo/CMakeFiles/algo_generate_messages_lisp.dir/progress.make
 
+algo/CMakeFiles/algo_generate_messages_lisp: /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg/stringArray.lisp
 algo/CMakeFiles/algo_generate_messages_lisp: /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp
 
 
+/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg/stringArray.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
+/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg/stringArray.lisp: /home/nvidia/puzzleArm/src/algo/msg/stringArray.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Lisp code from algo/stringArray.msg"
+	cd /home/nvidia/puzzleArm/build/algo && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/nvidia/puzzleArm/src/algo/msg/stringArray.msg -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg
+
 /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
 /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp: /home/nvidia/puzzleArm/src/algo/srv/num_state.srv
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Lisp code from algo/num_state.srv"
-	cd /home/nvidia/puzzleArm/build/algo && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/nvidia/puzzleArm/src/algo/srv/num_state.srv -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Lisp code from algo/num_state.srv"
+	cd /home/nvidia/puzzleArm/build/algo && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/nvidia/puzzleArm/src/algo/srv/num_state.srv -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv
 
 algo_generate_messages_lisp: algo/CMakeFiles/algo_generate_messages_lisp
+algo_generate_messages_lisp: /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg/stringArray.lisp
 algo_generate_messages_lisp: /home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp
 algo_generate_messages_lisp: algo/CMakeFiles/algo_generate_messages_lisp.dir/build.make
 
