@@ -71,6 +71,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     full_scrn = False
     fps = 0.0
     tic = time.time()
+    tkBlock = tk.Tk()
 
     #Setup opencv video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -133,8 +134,8 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                 full_scrn = not full_scrn
                 set_display(WINDOW_NAME, full_scrn)
             elif key == ord('R') or key == ord('r'):  #Reinitialize plate position (!!!Not sure if the messagebox working!!!)
-                tk.Tk().withdraw()
-                answer = askyesno(title = 'Confirmation',
+                tkBlock.withdraw()
+                answer = askyesno(title = 'Warning!',
                                   message = 'Are you sure that you want to reset?')
                 if answer:
                     node.reset()
