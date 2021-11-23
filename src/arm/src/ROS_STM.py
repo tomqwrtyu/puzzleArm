@@ -16,8 +16,8 @@ import serial
 import threading
 import struct
 
-COM_Name1P = '/dev/ttyACM1'##STM attatched to motor1 and Pressure sensor
-COM_Name23 = '/dev/ttyACM0'##STM attatched to motor2 and motor3
+COM_Name1P = '/dev/ttyACM4'##STM attatched to motor1 and Pressure sensor
+COM_Name23 = '/dev/ttyACM5'##STM attatched to motor2 and motor3
 Stop_flag = 1
 BAUTRATE = 230400#9600
 dt = 0.005#0.005
@@ -224,6 +224,7 @@ if __name__ == '__main__' :
         
     node = armNode()
     node.start()
+    rate = rospy.Rate(20)
         
     try:
         STM_1P = Connect_STM(COM_Name1P, BAUTRATE)
@@ -244,7 +245,8 @@ if __name__ == '__main__' :
 
                 if node.now_executing == None:
                    continue
-                for command in now_executing:
+                for command in node.now_executing:
+                    print(command)
                     read_in = command.split(' ')
 
                     if read_in[0] == 'A' :
@@ -454,6 +456,7 @@ if __name__ == '__main__' :
                     print 'now position:',read_in[1]
                     process_time+=1
                     print 'the program has run ',process_time,' times'
+                    rate.sleep()
         
             Stop_flag = 0
             STM_1P.close()
