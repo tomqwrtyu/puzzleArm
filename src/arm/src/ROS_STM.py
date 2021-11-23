@@ -16,8 +16,8 @@ import serial
 import threading
 import struct
 
-COM_Name1P = '/dev/ttyACM4'##STM attatched to motor1 and Pressure sensor
-COM_Name23 = '/dev/ttyACM5'##STM attatched to motor2 and motor3
+COM_Name1P = '/dev/ttyACM0'##STM attatched to motor1 and Pressure sensor
+COM_Name23 = '/dev/ttyACM1'##STM attatched to motor2 and motor3
 Stop_flag = 1
 BAUTRATE = 230400#9600
 dt = 0.005#0.005
@@ -57,7 +57,7 @@ class coordinate:
         self.y=y
         self.z=z
 
-now_position = coordinate(0.0 ,link2+link3 , link0+link1)## initial position
+now_position = coordinate((link2+link3)*math.cos(19*math.pi/180),(link2+link3)*math.sin(19*math.pi/180) , link0+link1)## initial position
 ##Note that coordinate is for ball center.
 R = [coordinate(0.0 ,link2+link3 , link0+link1) , coordinate(0.0 ,link2+link3 , link0+link1)]
 ##reset,need to set on actual robot arm
@@ -460,11 +460,10 @@ if __name__ == '__main__' :
         
             Stop_flag = 0
             STM_1P.close()
-            STM_23.close()
-            print 'ROS bye!'    
+            STM_23.close()   
             
     except: 
-        print('Some error!bye!')
+        print('STM connection failed')
         sys.exit()
 
 

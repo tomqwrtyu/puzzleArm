@@ -21,6 +21,7 @@ from utils.visualization import BBoxVisualization
 from utils.yolo_with_plugins import TrtYOLO
 from utils.yolo_ros_puzzle import camNode
 
+import tkinter as tk
 from tkinter.messagebox import askyesno
 
 import rospy
@@ -49,6 +50,12 @@ def parse_args():
     parser.add_argument(
         '-l', '--letter_box', action='store_true',
         help='inference with letterboxed image [False]')
+    parser.add_argument(
+        '__name', action='store_true',
+        help='meaningless arg')
+    parser.add_argument(
+        '__log', action='store_true',
+        help='meaningless arg')
     args = parser.parse_args()
     return args
 
@@ -126,6 +133,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                 full_scrn = not full_scrn
                 set_display(WINDOW_NAME, full_scrn)
             elif key == ord('R') or key == ord('r'):  #Reinitialize plate position (!!!Not sure if the messagebox working!!!)
+                tk.Tk().withdraw()
                 answer = askyesno(title = 'Confirmation',
                                   message = 'Are you sure that you want to reset?')
                 if answer:
