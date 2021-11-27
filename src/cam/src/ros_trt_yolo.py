@@ -72,6 +72,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     fps = 0.0
     tic = time.time()
     tkBlock = tk.Tk()
+    publishButton = 0 #
 
     #Setup opencv video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -87,9 +88,9 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
         img = vis.draw_bboxes(img, boxes, confs, clss)
         #img = show_fps(img, fps)
 
-        list_for_publish = node.generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
+        raw_list = node.generateListForPublish(cam.img_handle.shape, boxes, confs, clss, cls_dict)
         if not node.is_initialized :
-            ret = node.initializeBoxPosition(list_for_publish)
+            ret = node.initializeBoxPosition(raw_list)
             if ret == 1:
                 cv2.putText(img,
                             'Initializing failed. Please put 9 numbers to right places.',
@@ -104,7 +105,10 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                     set_display(WINDOW_NAME, full_scrn)
                 continue
         else:
-            list_for_show = node.publish(list_for_publish)
+            list_for_publish = node.toPublishFormat(raw_list)
+            list_for_show = [str(data) for data in list_for_publish.data]
+            if publishButton:
+                node.publish(list_for_publish)
             list_for_show.reverse()
             nine_squares_img = summonNineSquares(cam.img_handle.shape)    
             if any(list_for_show):
@@ -128,6 +132,11 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             fps = curr_fps if fps == 0.0 else (fps*0.95 + curr_fps*0.05)
             tic = toc
             key = cv2.waitKey(1)
+            if key == ord('P') or key == ord('p'): 
+                if publishButton:
+                    publishButton = 0
+                else:
+                    publishButton = 1
             if key == 27:  # ESC key: quit program
                 break
             elif key == ord('F') or key == ord('f'):  #Toggle fullscreen

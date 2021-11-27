@@ -129,11 +129,14 @@ class camNode():#For ROS node establish and publish
             self.average_wh_ratio_recorder['avg'] = (avg * num_boxes + new_ratio) / (num_boxes + 1)
             self.average_wh_ratio_recorder['num_boxes'] = num_boxes + 1
 
-    def publish(self,detected_list):
-        pub_message = self.__debugging(detected_list)
+    def toPublishFormat(self,detected_list):
+        return self.__debugging(detected_list)
         self.pub.publish(pub_message)
         ret = [str(data) for data in pub_message.data]
         return ret
+
+    def publish(self,pub_message):
+        self.pub.publish(pub_message)
 
     def __debugging(self,detected_list):#Warning!! This code may be useless
                                         

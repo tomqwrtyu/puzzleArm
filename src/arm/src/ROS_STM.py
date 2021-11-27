@@ -57,17 +57,19 @@ class coordinate:
         self.y=y
         self.z=z
 
-now_position = coordinate((link2+link3)*math.cos(19*math.pi/180),(link2+link3)*math.sin(19*math.pi/180) , link0+link1)## initial position
-##Note that coordinate is for ball center.
-R = [coordinate(0.0 ,link2+link3 , link0+link1) , coordinate(0.0 ,link2+link3 , link0+link1)]
+R=[coordinate( (link2+link3)*math.sin(24*math.pi/180.0),(link2+link3)*math.cos(24*math.pi/180.0) , link0+link1) , coordinate(0.0 , (link2+link3) , (link0+link1))]
+##reset,need to set on actual robot arm
+
+# now_position = coordinate((link2+link3)*math.sin(19*math.pi/180.0) ,(link2+link3)*math.cos(19*math.pi/180.0) , link0+link1)
+now_position = coordinate(0.0 , (link2+link3) , (link0+link1))
 ##reset,need to set on actual robot arm
 
 A = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , up_down_dis)]
 B = [coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
 C = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
-D = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh , up_down_dis)]
-E = [coordinate(0.0 , dis_ori_plate + half_plate_lengh , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh , up_down_dis)]
-F = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh , up_down_dis)]
+D = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
+E = [coordinate(0.0 , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
+F = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
 G = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
 H = [coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
 I = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
@@ -224,7 +226,7 @@ if __name__ == '__main__' :
         
     node = armNode()
     node.start()
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(50)
         
     try:
         STM_1P = Connect_STM(COM_Name1P, BAUTRATE)
@@ -286,8 +288,8 @@ if __name__ == '__main__' :
                         position[1] = I[1]
 
                     elif read_in[0] == 'R' :
-                        position[0] = R[0]
-                        position[1] = R[1]
+                        position[0] = R[1]
+                        position[1] = R[0]
                         
                     else: 
                         sys.exit("improper input")
@@ -330,8 +332,8 @@ if __name__ == '__main__' :
                         position[3] = I[0]
 
                     elif read_in[1] == 'R' :
-                        position[2] = R[1]
-                        position[3] = R[0]
+                        position[2] = R[0]
+                        position[3] = R[1]
                         
                     else: 
                         sys.exit("improper input")
@@ -349,18 +351,18 @@ if __name__ == '__main__' :
                     yf = position[0].y
                     zf = position[0].z
 
-                    if  now_position.z != position[0].z :##start from R point
+                    if  now_position.z != position[0].z: #start from R point
                         x_difference = (position[0].x - now_position.x)
                         y_difference = (position[0].y - now_position.y)
                         z_difference = (position[0].z - now_position.z)
-
+                        # print 'debug'
                         i=1
-                        for i in range(interval_i)  :
+                        for i in range(interval_i*2)  :
                             z_direction_move(xi,yi,zi)                                           
                             
-                            xi+= x_difference / interval #兩點之間切成100格
-                            yi+= y_difference / interval
-                            zi+= z_difference / interval
+                            xi+= x_difference / (interval*2) #R point is far away from normal work area
+                            yi+= y_difference / (interval*2) #so we set double interval numbers between R and A~I
+                            zi+= z_difference / (interval*2) #to avoid motor_input_volt from saturation
                             # print(xi,yi,zi)
                             i+=1
                             time.sleep(time_interval)
@@ -369,26 +371,49 @@ if __name__ == '__main__' :
                         yi = yf
                         zi = zf
                         z_direction_move(xi,yi,zi)
+                        time.sleep(time_interval*3)
 
-                    elif  now_position.x != position[0].x or now_position.y != position[0].y :
+                    else :
+                        if  now_position.z == above_dis :##== position[0].z
                         # print('haha')
-                        x_difference = (position[0].x - now_position.x)
-                        y_difference = (position[0].y - now_position.y)
-                        # z_difference = (position[0].z - now_position.z)
+                            x_difference = (position[0].x - now_position.x)
+                            y_difference = (position[0].y - now_position.y)
+                            # z_difference = (position[0].z - now_position.z)
 
-                        i=1
-                        for i in range(interval_i)  :
-                            move_above_plate(xi,yi)                                           
-                            
-                            xi+= x_difference / interval #兩點之間切成100格
-                            yi+= y_difference / interval
-                            # print(xi,yi,zi)
-                            i+=1
-                            time.sleep(time_interval)
+                            i=1
+                            for i in range(interval_i)  :
+                                move_above_plate(xi,yi)                                           
+                                
+                                xi+= x_difference / interval #兩點之間切成100格
+                                yi+= y_difference / interval
+                                # print(xi,yi,zi)
+                                i+=1
+                                time.sleep(time_interval)
 
-                        xi = xf ## let xi totally match xf
-                        yi = yf
-                        move_above_plate(xi,yi)
+                            xi = xf ## let xi totally match xf
+                            yi = yf
+                            move_above_plate(xi,yi)
+                            time.sleep(time_interval*3)
+
+                        elif now_position.z == (link0+link1) :##== position[0].z
+                            x_difference = (position[0].x - now_position.x)
+                            y_difference = (position[0].y - now_position.y)
+                            # z_difference = (position[0].z - now_position.z)
+
+                            i=1
+                            for i in range(interval_i)  :
+                                move_on_R(xi,yi)                                           
+                                
+                                xi+= x_difference / interval #兩點之間切成100格
+                                yi+= y_difference / interval
+                                # print(xi,yi,zi)
+                                i+=1
+                                time.sleep(time_interval)
+
+                            xi = xf ## let xi totally match xf
+                            yi = yf
+                            move_on_R(xi,yi)
+                            time.sleep(time_interval*3)
             #######################################################
 
                     j = 0
@@ -417,23 +442,10 @@ if __name__ == '__main__' :
                             xi = xf ## let xi totally match xf
                             yi = yf
                             move_on_surface(xi,yi)   
-
-                        elif zi == zf == above_dis :#moving above the plate 
-                            i=0
-                            for i in range(interval_i)  :##
-                                move_above_plate(xi,yi)                                           
-                                
-                                xi+= x_difference / interval #兩點之間切成100格
-                                yi+= y_difference / interval
-                                # print(xi,yi,zi)
-                                i+=1
-                                time.sleep(time_interval)
-                            xi = xf ## let xi totally match xf
-                            yi = yf
-                            move_above_plate(xi,yi) 
-
+                            time.sleep(time_interval*3)
+                               
                         elif zi != zf :
-                            i=0
+                            i=1
                             for i in range(interval_i)  :
                                 z_direction_move(xi,yi,zi)
                                 
@@ -447,6 +459,24 @@ if __name__ == '__main__' :
                             yi = yf
                             zi = zf
                             z_direction_move(xi,yi,zi)
+                            time.sleep(time_interval*3)
+
+                        elif zi == zf == R[0].z :
+                            i=1
+                            for i in range(interval_i)  :
+                                move_on_R(xi,yi)
+                                
+                                xi+= x_difference / interval #兩點之間切成100格
+                                yi+= y_difference / interval
+                                # print(xi,yi)
+                                i+=1
+                                time.sleep(time_interval)
+                            xi = xf ## let xi totally match xf
+                            yi = yf
+                        
+                            move_on_R(xi,yi)
+                            time.sleep(time_interval*3)
+                            print 'go to reset'
                         else :
                             sys.exit("error")
 
@@ -456,7 +486,8 @@ if __name__ == '__main__' :
                     print 'now position:',read_in[1]
                     process_time+=1
                     print 'the program has run ',process_time,' times'
-                    rate.sleep()
+
+		time.sleep(0.1)
         
             Stop_flag = 0
             STM_1P.close()
