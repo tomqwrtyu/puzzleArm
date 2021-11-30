@@ -182,13 +182,16 @@ class PuzzleSearch(object):
 
     def _heuristic_manhatten(self, node, goal):
         ret = 0
-        for i in node:
-            # exclude None
-            if not i:
-                continue
-            row_idx, col_idx = self._position_by_value(node, i)
-            row_idx_goal, col_idx_goal = self._position_by_value(goal, i)
-            ret += abs(row_idx_goal - row_idx) + abs(col_idx_goal - col_idx)
+        try:
+            for i in node:
+                # exclude None
+                if not i:
+                    continue
+                row_idx, col_idx = self._position_by_value(node, i)
+                row_idx_goal, col_idx_goal = self._position_by_value(goal, i)
+                ret += abs(row_idx_goal - row_idx) + abs(col_idx_goal - col_idx)
+        except:
+            return None
         return ret
 
     def rep_node(self, node):
@@ -207,6 +210,8 @@ class PuzzleSearch(object):
         ret = None
         if not node_list:
             self.start.cost = self._heuristic_manhatten(self.start.value, self.goal.value)
+            if self.start.cost == None:
+                return None
             self.start.total_cost  = 0
             node_list = []
             heapq.heapify(node_list)
@@ -226,6 +231,8 @@ class PuzzleSearch(object):
                     obj_node = Node(choice)
                     obj_node.parent = node
                     obj_node.cost = self._heuristic_manhatten(choice, self.goal.value)
+                    if obj_node.cost == None:
+                        return None
                     obj_node.total_cost = obj_node.cost + node.total_cost      
                     obj_node.point_to_childern = directions[index]
                     heapq.heappush(node_list, obj_node)
@@ -339,12 +346,14 @@ def main():
             continue
         puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(goal_cond))
         
-        for i in range(result.count):
-            # getattr to get fuction value
-            func = getattr(puzzle, result.algo)
-            res = func()
-
-         
+        # getattr to get fuction value
+        func = getattr(puzzle, result.algo)
+        res = func()
+        if res == None:
+            print(ros_node.start_cond, ros_node.time_stamp)
+            ros_node.start_cond = None
+            continue
+     
         order = Queue()
         reorder = Stack()
         node = res
@@ -366,8 +375,8 @@ def main():
             
         actions.reverse()
         actions_string = ",".join(actions)
-        #print(actions,actions_string)
-        ros_node.publish(actions)
+        if (time.time() - ros_node.time_stamp) < 1:
+            ros_node.publish(actions)
         
         # movement = count-1
         # order.push(start_cond)

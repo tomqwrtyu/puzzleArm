@@ -57,12 +57,11 @@ class coordinate:
         self.y=y
         self.z=z
 
-R=[coordinate( (link2+link3)*math.sin(24*math.pi/180.0),(link2+link3)*math.cos(24*math.pi/180.0) , link0+link1) , coordinate(0.0 , (link2+link3) , (link0+link1))]
-##reset,need to set on actual robot arm
+##11/28
+R=[coordinate(0.0 , (link2+link3) , (link0+link1)) , coordinate( (link2+link3)*math.sin(28*math.pi/180.0),(link2+link3)*math.cos(28*math.pi/180.0) , link0+link1)]
 
-# now_position = coordinate((link2+link3)*math.sin(19*math.pi/180.0) ,(link2+link3)*math.cos(19*math.pi/180.0) , link0+link1)
-now_position = coordinate(0.0 , (link2+link3) , (link0+link1))
-##reset,need to set on actual robot arm
+# now_position = coordinate(0.0 , (link2+link3) , (link0+link1))
+now_position = R[1]##11/28
 
 A = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , up_down_dis)]
 B = [coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
@@ -115,7 +114,7 @@ def Read_data(Serial):
             
 	    print data
         except Exception as e:
-            print e, data           
+            print e           
     return
 
 def move_on_surface(x,y): #地面上平移
@@ -201,6 +200,29 @@ def z_direction_move(x,y,z): #垂直地面上下移動
     Cmd_pub23(STM_23)
     Cmd_pub1P(STM_1P)
 
+def move_on_R(x,y): #地面上平移
+    L = math.sqrt(x**2+y**2)
+    L1 = 0.0
+    L2 = link2
+    L3 = link3
+    # L_diagonal = math.sqrt(L1**2+L**2)
+    
+    angle1 = -math.asin(x/L)
+    angle2 = 0.0
+    angle3 = 0.0##belt transmition of real arm
+
+    # print angle1,angle2,angle3
+
+    global Cmd_1,Cmd_2,Cmd_3
+    Cmd_1 = angle1
+    Cmd_2 = angle2 
+    Cmd_3 = angle3
+    # return(angle1,angle2,angle3)
+    
+    Cmd_pub23(STM_23)
+    Cmd_pub1P(STM_1P)
+
+
 class armNode():
     def __init__(self):
         self.node = None
@@ -214,6 +236,8 @@ class armNode():
 
     def __listenerCallback(self, recieved_data):
         self.now_executing = recieved_data.data
+        if any(self.now_executing):
+            self.now_executing.append('R R')
         self.time_stamp = recieved_data.time_stamp
 
 ##########################################
@@ -233,22 +257,19 @@ if __name__ == '__main__' :
         STM_23 = Connect_STM(COM_Name23, BAUTRATE)
         
         if  (STM_1P != 'Error' and STM_23 != 'Error'):
-            
             t_1P = threading.Thread(target=Read_data, args=(STM_1P,))
             t_1P.start()
             t_23 = threading.Thread(target=Read_data, args=(STM_23,))
             t_23.start()
             while not rospy.is_shutdown():
                 # Cmd_pub23(STM)           
-                    
                 read_in = ['a','a']
                 position = [coordinate(0,0,0),coordinate(0,0,0),coordinate(0,0,0),coordinate(0,0,0)]
                 ##meaningless,just initialize,tell the computer there are 2 and 4 index
-
                 if node.now_executing == None:
                    continue
+                print(node.now_executing)
                 for command in node.now_executing:
-                    print(command)
                     read_in = command.split(' ')
 
                     if read_in[0] == 'A' :
@@ -288,8 +309,8 @@ if __name__ == '__main__' :
                         position[1] = I[1]
 
                     elif read_in[0] == 'R' :
-                        position[0] = R[1]
-                        position[1] = R[0]
+                        position[0] = R[0]
+                        position[1] = R[1]
                         
                     else: 
                         sys.exit("improper input")
@@ -332,7 +353,7 @@ if __name__ == '__main__' :
                         position[3] = I[0]
 
                     elif read_in[1] == 'R' :
-                        position[2] = R[0]
+                        position[2] = R[1]
                         position[3] = R[1]
                         
                     else: 
@@ -352,6 +373,27 @@ if __name__ == '__main__' :
                     zf = position[0].z
 
                     if  now_position.z != position[0].z: #start from R point
+                        #"""
+                        if   now_position.x == R[1].x:
+                            x_difference = (R[0].x - R[1].x)
+                            y_difference = (R[0].y - R[1].y)
+                            #z_difference = (R[0].z - R[1].z)
+                            print(interval_i)
+                            for i in range(1,interval_i)  :
+                                print(i)
+                                move_on_R(xi,yi)                                           
+                                
+                                xi+= x_difference / (interval) #兩點之間切成100格
+                                yi+= y_difference / (interval)
+                                i+=1
+                                time.sleep(time_interval)
+
+                            xi = R[0].x ## let xi totally match xf
+                            yi = R[0].y
+                            move_on_R(xi,yi)
+                            time.sleep(time_interval*3)
+                            now_position = R[0]
+                        #"""
                         x_difference = (position[0].x - now_position.x)
                         y_difference = (position[0].y - now_position.y)
                         z_difference = (position[0].z - now_position.z)
@@ -495,7 +537,10 @@ if __name__ == '__main__' :
             
     except: 
         print('STM connection failed')
-        sys.exit()
+        Stop_flag = 0
+        STM_1P.close()
+        STM_23.close() 
+        exit()
 
 
 ##
