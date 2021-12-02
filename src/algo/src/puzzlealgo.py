@@ -266,13 +266,15 @@ class algoNode():
         
     def __listenerCallback(self, recieved_data):
         recieved_data_list = list(recieved_data.data)
+        meaningful_data = 0
+        for i in range(1,10):
+            if i in recieved_data_list:
+                meaningful_data += 1
+        if meaningful_data < 8: #we need at least (9 - 1) numbers all different to slove a puzzle
+            return None
         recieved_data_list.reverse()
-        none_count = 0
         for index,data in enumerate(recieved_data_list):
             if data == self.NONE_VALUE:
-                if none_count > 1: #We do not expect puzzle with two holes
-                    self.start_cond == None
-                    return None
                 recieved_data_list[index] = None
                 none_count += 1
         if not self.time_stamp and self.time_stamp == recieved_data.time_stamp:
