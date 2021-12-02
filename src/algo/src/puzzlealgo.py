@@ -357,6 +357,6 @@ def main():
         if (time.time() - ros_node.time_stamp) < 1:
             ros_node.publish(actions)
         else:
-            ros_node.publish([]) #keep motor stopping
+            ros_node.publish([]) #keeping motor stopped
 if __name__ == "__main__":
     main()
