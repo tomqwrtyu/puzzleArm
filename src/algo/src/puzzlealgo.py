@@ -11,23 +11,6 @@ import rospy
 from algo.msg import stringArray
 from cam.msg import UIntArray
 from cam.srv import *
-
-
-GOAL_STATE = [1, 2, 3, 
-                 4, 5, 6, 
-                 7, 8, 9]
-
-START1 = [None, 3, 7, 
-         1, 2, 8, 
-         5, 6, 4]
-#d r d r u l l
-
-START = [1, 2, 3, 
-        4, 5, 6, 
-        None,7, 8]
-
-START_DICT = {"start": START,
-               "start1":START1}
                
 CAPITAL_CONSTANT = 65
 
@@ -244,6 +227,7 @@ class algoNode():
         self.pub = None
         self.sub = None
         self.start_cond = None
+        self.goal_cond = None
         self.blank_space = None
         self.NONE_VALUE = 999
         self.time_stamp = None
@@ -253,13 +237,13 @@ class algoNode():
         self.pub = rospy.Publisher('algo_result', stringArray, queue_size=10)
         self.sub = rospy.Subscriber('cam_detected', UIntArray, self.__listenerCallback)
         
-    def goal_determine(self):
-        if self.start_cond == None:
+    def __goal_determine(self, start_cond):
+        if start_cond == None:
             return None
         num_sum = 0
         ideal_sum = 45
         goal = [None] * 9
-        for index, num in enumerate(self.start_cond):
+        for index, num in enumerate(start_cond):
             if not num == None:
                 num_sum += num
             else:
@@ -267,7 +251,7 @@ class algoNode():
         lacked_num = ideal_sum - num_sum
         if lacked_num > 9:
             return None
-        for i in range(len(self.start_cond)):
+        for i in range(len(start_cond)):
             if i == (lacked_num - 1):
                 goal[i] = None
             else:
@@ -294,6 +278,7 @@ class algoNode():
         if not self.time_stamp and self.time_stamp == recieved_data.time_stamp:
             return None
         self.start_cond = recieved_data_list
+        self.goal_cond = self.__goal_determine(recieved_data_list)
         self.time_stamp = recieved_data.time_stamp
         
     def __transferOutput(self, actions):
@@ -326,31 +311,23 @@ class algoNode():
                 
    
 def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-a', action="store", dest="algo", default="astar")
-    parser.add_argument('-d', action="store", dest="condition", default="start")
-    parser.add_argument('-c', action="store", dest="count", type=int, default=1)
-    result = parser.parse_args()
-    
+   
     #Setup ros node
     ros_node = algoNode()
     ros_node.start()
 
 
     while (not rospy.is_shutdown()):
-        if ros_node.start_cond == None:
+        if (ros_node.start_cond == None \
+            or rosnode.goal_cond == None):
             continue
-        goal_cond = ros_node.goal_determine()
-        if goal_cond == None:
-            continue
-        puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(goal_cond))
+        puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(ros_node.start_cond))
         
         # getattr to get fuction value
-        func = getattr(puzzle, result.algo)
+        func = getattr(puzzle, astar)
         res = func()
         if res == None:
-            print(ros_node.start_cond, ros_node.time_stamp)
+            print(puzzle.start, puzzle.goal)
             ros_node.start_cond = None
             continue
      
@@ -377,36 +354,7 @@ def main():
         actions_string = ",".join(actions)
         if (time.time() - ros_node.time_stamp) < 1:
             ros_node.publish(actions)
-        
-        # movement = count-1
-        # order.push(start_cond)
-        
-        '''
-        print ("To solve the puzzle : \n")
-        time.sleep(0.75)
-        '''
-        # for i in range(count):
-            # #path = 'output.txt'
-            # #with open(path,'a') as f:
-            # #f = open(path, 'a')    
-            # #num = puzzle.rep_node(reorder.pop())
-            # str = puzzle.rep_node(reorder.pop())
-            # str = str.replace('N','0')
-            # num = [int(temp)for temp in str.split() if temp.isdigit()]
-            # print(num)
-        # print(actions)
-        
-
-        ''' 
-        print ("Total movement =  %s\n") % movement
-        time.sleep(0.75)
-        
-        print ("To reverse the puzzle : \n")
-        time.sleep(0.75)
-
-        for i in range(count):
-            print (puzzle.rep_node(order.pop()))
-            time.sleep(0.75)
-        '''    
+        else:
+            ros_node.publish([]) #keep motor stopping
 if __name__ == "__main__":
     main()
