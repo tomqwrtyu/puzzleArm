@@ -276,7 +276,6 @@ class algoNode():
         for index,data in enumerate(recieved_data_list):
             if data == self.NONE_VALUE:
                 recieved_data_list[index] = None
-                none_count += 1
         if not self.time_stamp and self.time_stamp == recieved_data.time_stamp:
             return None
         self.start_cond = recieved_data_list
@@ -323,14 +322,12 @@ def main():
         if (ros_node.start_cond == None \
             or rosnode.goal_cond == None):
             continue
-        puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(ros_node.start_cond))
+        puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(ros_node.goal_cond))
         
         # getattr to get fuction value
         func = getattr(puzzle, astar)
         res = func()
         if res == None:
-            print(puzzle.start, puzzle.goal)
-            ros_node.start_cond = None
             continue
      
         order = Queue()
@@ -355,8 +352,8 @@ def main():
         actions.reverse()
         actions_string = ",".join(actions)
         if (time.time() - ros_node.time_stamp) < 1:
-            ros_node.publish(actions)
-        else:
             ros_node.publish([]) #keeping motor stopped
+        else:
+            ros_node.publish(actions)          
 if __name__ == "__main__":
     main()
