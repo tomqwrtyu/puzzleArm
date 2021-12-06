@@ -63,16 +63,15 @@ R=[coordinate(0.0 , (link2+link3) , (link0+link1)) , coordinate( (link2+link3)*m
 # now_position = coordinate(0.0 , (link2+link3) , (link0+link1))
 now_position = R[1]##11/28
 
-A = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , up_down_dis)]
-B = [coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
-C = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
-D = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
+A = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
+B = [coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
+C = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
+D = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
 E = [coordinate(0.0 , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
-F = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
-G = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
-H = [coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
-I = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
-
+F = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
+G = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
+H = [coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
+I = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , up_down_dis)]
 
 
 def CmdtoByte(NUM):

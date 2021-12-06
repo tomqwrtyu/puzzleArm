@@ -113,9 +113,11 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             nine_squares_img = summonNineSquares(cam.img_handle.shape)    
             if any(list_for_show):
                 for index,detected_number in enumerate(list_for_show):
-                    color = (min(int(detected_number) * 25, 255),
-                             min(int(detected_number) * 14, 255),
-                             min(int(detected_number) * 10, 255))
+                    if detected_number == '999':
+                        continue
+                    color = (255,255,255)#min(int(detected_number) * 25, 255),
+                             #min(int(detected_number) * 14, 255),
+                             #min(int(detected_number) * 10, 255))
                     cv2.putText(nine_squares_img,
                                 str(detected_number),
                                 puzzlePosToCamPos(cam.img_handle.shape, index+1),
@@ -168,7 +170,7 @@ def puzzlePosToCamPos(shape, puzzle_pos):#Convert 1~9 to position on image
             
 def summonNineSquares(shape):#As the funcion name says.
     img = np.zeros((shape[0], shape[1], 3), np.uint8)
-    img.fill(255)
+    img.fill(0)
     oneThirdOfX = floor(shape[0]/3)
     oneThirdOfY = floor(shape[1]/3)
     xmax = shape[0]
@@ -177,10 +179,10 @@ def summonNineSquares(shape):#As the funcion name says.
     y = 0
     for i in range(3):
         x += oneThirdOfX
-        cv2.line(img, (0,x), (ymax,x), (0,0,0), 3)
+        cv2.line(img, (0,x), (ymax,x), (255,255,255), 3)
     for j in range(3):
         y += oneThirdOfY
-        cv2.line(img, (y,0), (y,xmax), (0,0,0), 3)
+        cv2.line(img, (y,0), (y,xmax), (255,255,255), 3)
     return img
         
 
@@ -194,7 +196,7 @@ def main():
         raise SystemExit('ERROR: file (%s.trt) not found!' % args.model)
 
     #Setup cam
-    args.usb = 1
+    args.usb = 2
     cam = Camera(args)
     if not cam.isOpened():
         raise SystemExit('ERROR: failed to open camera!')
