@@ -267,7 +267,7 @@ if __name__ == '__main__' :
                 ##meaningless,just initialize,tell the computer there are 2 and 4 index
                 if node.now_executing == None:
                    continue
-                print(node.now_executing)
+                #print(node.now_executing)
                 for command in node.now_executing:
                     read_in = command.split(' ')
 

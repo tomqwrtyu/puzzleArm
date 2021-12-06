@@ -38,7 +38,10 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/msg" TYPE FILE FILES "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/algo/msg" TYPE FILE FILES
+    "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+    "/home/nvidia/puzzleArm/src/algo/msg/timeStamp.msg"
+    )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

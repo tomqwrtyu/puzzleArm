@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg"
+messages_str = "/home/nvidia/puzzleArm/src/algo/msg/stringArray.msg;/home/nvidia/puzzleArm/src/algo/msg/timeStamp.msg"
 services_str = "/home/nvidia/puzzleArm/src/algo/srv/num_state.srv"
 pkg_name = "algo"
 dependencies_str = "std_msgs"

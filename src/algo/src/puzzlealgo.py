@@ -9,6 +9,7 @@ import time
 
 import rospy
 from algo.msg import stringArray
+from algo.msg import timeStamp
 from cam.msg import UIntArray
 from cam.srv import *
                
@@ -225,6 +226,7 @@ class algoNode():
     def __init__(self):
         self.node = None
         self.pub = None
+        self.pub_time = None
         self.sub = None
         self.start_cond = None
         self.goal_cond = None
@@ -235,6 +237,7 @@ class algoNode():
     def start(self):
         self.node = rospy.init_node('algo_node')
         self.pub = rospy.Publisher('algo_result', stringArray, queue_size=10)
+        self.pub_time = rospy.Publisher('caculating_timer', timeStamp, queue_size=10)
         self.sub = rospy.Subscriber('cam_detected', UIntArray, self.__listenerCallback)
         
     def __goal_determine(self, start_cond):
@@ -259,10 +262,16 @@ class algoNode():
         return goal
         
     def publish(self, actions):
-        pub_data =  stringArray() #Need to be specified again
+        pub_data =  stringArray() 
         pub_data.time_stamp = time.time()
         pub_data.data = self.__transferOutput(actions)
         self.pub.publish(pub_data)
+        
+
+    def time_publish(self):
+        pub_stamp = timeStamp()
+        pub_stamp.time_stamp = time.time()
+        self.pub_time.publish(pub_stamp)
         
     def __listenerCallback(self, recieved_data):
         recieved_data_list = list(recieved_data.data)
@@ -319,6 +328,7 @@ def main():
 
 
     while (not rospy.is_shutdown()):
+        ros_node.time_publish()
         if (ros_node.start_cond == None \
             or ros_node.goal_cond == None):
             continue

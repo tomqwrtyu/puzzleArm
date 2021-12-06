@@ -3,10 +3,12 @@ from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
 from cam.msg import UIntArray
 from cam.srv import *
+from algo.msg import timeStamp
 
 import numpy as np
 from math import floor
 import time
+import cv2
 
 NONE_VALUE = 999
 INVALID_BOX_RATIO = 0.5
@@ -16,127 +18,18 @@ class camNode():#For ROS node establish and publish
     def __init__(self):
         self.node = None
         self.pub = None
+        self.sub = None
         self.write_video = None
         self.is_initialized = False
         self.xminmax = {'min': None, 'max': None}
         self.yminmax = {'min': None, 'max': None}
+        self.last_time_stamp = None
         self.message_to_pub = UIntArray()
         self.message_to_pub.data = [NONE_VALUE] * 9
         self.vanish_determinator = []
         self.confs_recorder = []
         self.average_wh_ratio_recorder = None
         #self.goal_position = None
-        
-    def start(self):
-        self.node = rospy.init_node('cam_node')
-        self.pub = rospy.Publisher('cam_detected', UIntArray, queue_size=10)
-        #service = rospy.Service('GetTheGoal', goal, self.__request_handler)
-        
-    def reset(self):
-        self.is_initialized = False
-        self.xminmax = {'min': None, 'max': None}
-        self.yminmax = {'min': None, 'max': None}
-        self.message_to_pub.data = [NONE_VALUE] * 9
-        self.vanish_determinator = []
-        self.confs_recorder = []
-        self.average_wh_ratio_recorder = None
-        #self.goal_position = None
-        
-    def initializeBoxPosition(self,detected_list):
-        if not len(detected_list) == 9:
-            return 1
-        xlist = []
-        ylist = []
-        for item in detected_list:
-            xlist.append(item['axes'][0])
-            ylist.append(item['axes'][1])
-        self.xminmax['min'] = min(xlist) - int((max(xlist) - min(xlist))/4)
-        self.xminmax['max'] = max(xlist) + int((max(xlist) - min(xlist))/4)
-        self.yminmax['min'] = min(ylist) - int((max(ylist) - min(ylist))/4)
-        self.yminmax['max'] = max(ylist) + int((max(ylist) - min(ylist))/4)
-        for item in detected_list:
-            if not str(item['number']) == str(self.__positionDetermine(item['axes'][0], item['axes'][1])):
-                return 1
-        self.is_initialized = True
-        return 0
-            
-    
-        
-    def generateListForPublish(self, shape, boxes, confs, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
-        detected_objects = []
-        classes = np.int8(classes)
-        for index,box in enumerate(boxes):
-            wh_ratio = self.__ratioCaculate(box[1], box[0], box[3], box[2])
-            if self.average_wh_ratio_recorder == None:
-                pass
-            elif (wh_ratio * INVALID_BOX_RATIO > self.average_wh_ratio_recorder['avg']):
-                continue
-            self.__ratioUpdate(wh_ratio)
-            xavg = floor((box[1] + box[3]) / 2)
-            yavg = floor((box[0] + box[2]) / 2)
-            if not self.is_initialized:
-                detected_object = {'number':cls_dict[classes[index]],
-                               'conf':confs[index],
-                               'axes':(xavg, yavg)}
-            else:
-                detected_object = {'number':cls_dict[classes[index]],
-                                   'conf':confs[index],
-                                   'pos':self.__positionDetermine(xavg, yavg)}
-            detected_objects.append(detected_object)
-        return detected_objects
-        
-    def __positionDetermine(self, x, y): #up left for 1,up mid for 2,up right for 3
-                                         #left for 4,mid for 5,right for 6
-                                         #down left for 7,down mid for 8,down right for 9
-        xmin = self.xminmax['min']
-        xmax = self.xminmax['max']
-        ymin = self.yminmax['min']
-        ymax = self.yminmax['max']
-        examine_axes_list = []
-        oneThirdOfX = floor((xmax - xmin)/3)
-        oneThirdOfY = floor((ymax - ymin)/3)
-        examine_x = [xmin,xmin]
-        for i in range(3):
-            j = 0
-            examine_x[0] = examine_x[1]
-            examine_x[1] += oneThirdOfX
-            examine_y = [ymin,ymin]
-            while(j < 3):
-                j += 1
-                examine_y[0] = examine_y[1]
-                examine_y[1] += oneThirdOfY
-                if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
-                    if not self.is_initialized:
-                        return 10 - (i*3+j)
-                    return i*3+j
-                else:
-                    continue
-        return None
-    
-    def __ratioCaculate(self, xmin, ymin, xmax, ymax): #this 
-        height = xmax - xmin
-        width = ymax - ymin
-        return (width / height)
-        
-    def __ratioUpdate(self, new_ratio):
-        if self.average_wh_ratio_recorder == None:
-            if new_ratio < 0.7:
-                return 0
-            self.average_wh_ratio_recorder = {'avg':new_ratio, 'num_boxes':1}
-        else:
-            avg = self.average_wh_ratio_recorder['avg'] 
-            num_boxes = self.average_wh_ratio_recorder['num_boxes'] 
-            self.average_wh_ratio_recorder['avg'] = (avg * num_boxes + new_ratio) / (num_boxes + 1)
-            self.average_wh_ratio_recorder['num_boxes'] = num_boxes + 1
-
-    def toPublishFormat(self,detected_list):
-        return self.__debugging(detected_list)
-        self.pub.publish(pub_message)
-        ret = [str(data) for data in pub_message.data]
-        return ret
-
-    def publish(self,pub_message):
-        self.pub.publish(pub_message)
 
     def __debugging(self,detected_list):#Warning!! This code may be useless
                                         
@@ -219,7 +112,137 @@ class camNode():#For ROS node establish and publish
                 if index not in invalid_changed_positions:
                     self.message_to_pub.data[index] = new_num
         return self.message_to_pub 
-     
+
+    def __listenerCallback(self, recieved_data):
+        self.last_time_stamp = recieved_data.time_stamp
+
+    def __positionDetermine(self, x, y): #up left for 1,up mid for 2,up right for 3
+                                         #left for 4,mid for 5,right for 6
+                                         #down left for 7,down mid for 8,down right for 9
+        xmin = self.xminmax['min']
+        xmax = self.xminmax['max']
+        ymin = self.yminmax['min']
+        ymax = self.yminmax['max']
+        examine_axes_list = []
+        oneThirdOfX = floor((xmax - xmin)/3)
+        oneThirdOfY = floor((ymax - ymin)/3)
+        examine_x = [xmin,xmin]
+        for i in range(3):
+            j = 0
+            examine_x[0] = examine_x[1]
+            examine_x[1] += oneThirdOfX
+            examine_y = [ymin,ymin]
+            while(j < 3):
+                j += 1
+                examine_y[0] = examine_y[1]
+                examine_y[1] += oneThirdOfY
+                if x >= examine_x[0] and x <= examine_x[1] and y >= examine_y[0] and y <= examine_y[1]:
+                    if not self.is_initialized:
+                        return 10 - (i*3+j)
+                    return i*3+j
+                else:
+                    continue
+        return None
+    
+    def __ratioCaculate(self, xmin, ymin, xmax, ymax): #this 
+        height = xmax - xmin
+        width = ymax - ymin
+        return (width / height)
+        
+    def __ratioUpdate(self, new_ratio):
+        if self.average_wh_ratio_recorder == None:
+            if new_ratio < 0.7:
+                return 0
+            self.average_wh_ratio_recorder = {'avg':new_ratio, 'num_boxes':1}
+        else:
+            avg = self.average_wh_ratio_recorder['avg'] 
+            num_boxes = self.average_wh_ratio_recorder['num_boxes'] 
+            self.average_wh_ratio_recorder['avg'] = (avg * num_boxes + new_ratio) / (num_boxes + 1)
+            self.average_wh_ratio_recorder['num_boxes'] = num_boxes + 1
+
+    def generateListForPublish(self, shape, boxes, confs, classes, cls_dict): #boxes : [ymin,xmin,ymax,xmax]
+        detected_objects = []
+        classes = np.int8(classes)
+        for index,box in enumerate(boxes):
+            wh_ratio = self.__ratioCaculate(box[1], box[0], box[3], box[2])
+            if self.average_wh_ratio_recorder == None:
+                pass
+            elif (wh_ratio * INVALID_BOX_RATIO > self.average_wh_ratio_recorder['avg']):
+                continue
+            self.__ratioUpdate(wh_ratio)
+            xavg = floor((box[1] + box[3]) / 2)
+            yavg = floor((box[0] + box[2]) / 2)
+            if not self.is_initialized:
+                detected_object = {'number':cls_dict[classes[index]],
+                               'conf':confs[index],
+                               'axes':(xavg, yavg)}
+            else:
+                detected_object = {'number':cls_dict[classes[index]],
+                                   'conf':confs[index],
+                                   'pos':self.__positionDetermine(xavg, yavg)}
+            detected_objects.append(detected_object)
+        return detected_objects
+
+    def initializeBoxPosition(self,detected_list):
+        if not len(detected_list) == 9:
+            return 1
+        xlist = []
+        ylist = []
+        for item in detected_list:
+            xlist.append(item['axes'][0])
+            ylist.append(item['axes'][1])
+        self.xminmax['min'] = min(xlist) - int((max(xlist) - min(xlist))/4)
+        self.xminmax['max'] = max(xlist) + int((max(xlist) - min(xlist))/4)
+        self.yminmax['min'] = min(ylist) - int((max(ylist) - min(ylist))/4)
+        self.yminmax['max'] = max(ylist) + int((max(ylist) - min(ylist))/4)
+        for item in detected_list:
+            if not str(item['number']) == str(self.__positionDetermine(item['axes'][0], item['axes'][1])):
+                return 1
+        self.is_initialized = True
+        return 0
+
+    def publish(self,pub_message):
+        self.pub.publish(pub_message)
+
+    def reset(self):
+        self.is_initialized = False
+        self.xminmax = {'min': None, 'max': None}
+        self.yminmax = {'min': None, 'max': None}
+        self.message_to_pub.data = [NONE_VALUE] * 9
+        self.vanish_determinator = []
+        self.confs_recorder = []
+        self.average_wh_ratio_recorder = None
+        #self.goal_position = None
+        
+    def start(self):
+        self.node = rospy.init_node('cam_node')
+        self.pub = rospy.Publisher('cam_detected', UIntArray, queue_size=10)
+        self.sub = rospy.Subscriber('caculating_timer', timeStamp, self.__listenerCallback)
+        #service = rospy.Service('GetTheGoal', goal, self.__request_handler)
+
+    def showCaculatingTimer(self, img):
+        if self.last_time_stamp and (time.time() - self.last_time_stamp > 1):
+            font = cv2.FONT_HERSHEY_PLAIN
+            line = cv2.LINE_AA
+            executing_time = time.time() - self.last_time_stamp
+            caculating_text = 'Caculating best route, already used {:.2f} seconds'.format(executing_time)
+            cv2.rectangle(img, (120, 22), (570, 5), ( 0, 255, 255), -1, cv2.LINE_AA)
+            cv2.putText(img, caculating_text, (121, 20), font, 1.0, (32, 32, 32), 4, line)
+            cv2.putText(img, caculating_text, (120, 20), font, 1.0, (240, 240, 240), 1, line)
+            return img
+        else:
+            return img
+
+        
+
+    def toPublishFormat(self,detected_list):
+        return self.__debugging(detected_list)
+        self.pub.publish(pub_message)
+        ret = [str(data) for data in pub_message.data]
+        return ret
+
+
+
     # def __request_handler(self,request):
         # response = goalResponse()
         # response.goal_pos = self.goal_position

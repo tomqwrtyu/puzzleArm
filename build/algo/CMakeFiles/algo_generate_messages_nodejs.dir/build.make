@@ -54,6 +54,7 @@ CMAKE_BINARY_DIR = /home/nvidia/puzzleArm/build
 include algo/CMakeFiles/algo_generate_messages_nodejs.dir/progress.make
 
 algo/CMakeFiles/algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/stringArray.js
+algo/CMakeFiles/algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/timeStamp.js
 algo/CMakeFiles/algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js
 
 
@@ -62,13 +63,19 @@ algo/CMakeFiles/algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/shar
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from algo/stringArray.msg"
 	cd /home/nvidia/puzzleArm/build/algo && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/nvidia/puzzleArm/src/algo/msg/stringArray.msg -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg
 
+/home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/timeStamp.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
+/home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/timeStamp.js: /home/nvidia/puzzleArm/src/algo/msg/timeStamp.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from algo/timeStamp.msg"
+	cd /home/nvidia/puzzleArm/build/algo && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/nvidia/puzzleArm/src/algo/msg/timeStamp.msg -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg
+
 /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
 /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js: /home/nvidia/puzzleArm/src/algo/srv/num_state.srv
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from algo/num_state.srv"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Javascript code from algo/num_state.srv"
 	cd /home/nvidia/puzzleArm/build/algo && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/nvidia/puzzleArm/src/algo/srv/num_state.srv -Ialgo:/home/nvidia/puzzleArm/src/algo/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p algo -o /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv
 
 algo_generate_messages_nodejs: algo/CMakeFiles/algo_generate_messages_nodejs
 algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/stringArray.js
+algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/msg/timeStamp.js
 algo_generate_messages_nodejs: /home/nvidia/puzzleArm/devel/share/gennodejs/ros/algo/srv/num_state.js
 algo_generate_messages_nodejs: algo/CMakeFiles/algo_generate_messages_nodejs.dir/build.make
 

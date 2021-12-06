@@ -107,10 +107,15 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
         else:
             list_for_publish = node.toPublishFormat(raw_list)
             list_for_show = [str(data) for data in list_for_publish.data]
-            if publishButton:
-                node.publish(list_for_publish)
             list_for_show.reverse()
             nine_squares_img = summonNineSquares(cam.img_handle.shape)    
+            if publishButton:
+                node.publish(list_for_publish)
+            else:
+                cv2.putText(nine_squares_img, "STOPPED", (11, 35), cv2.FONT_HERSHEY_PLAIN,
+                            1.0, (32, 32, 32), 4, cv2.LINE_AA)
+                cv2.putText(nine_squares_img, "STOPPED", (10, 35), cv2.FONT_HERSHEY_PLAIN,
+                            1.0, (240, 240, 240), 1, cv2.LINE_AA)
             if any(list_for_show):
                 for index,detected_number in enumerate(list_for_show):
                     if detected_number == '999':
@@ -123,6 +128,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
                                 puzzlePosToCamPos(cam.img_handle.shape, index+1),
                                 cv2.FONT_HERSHEY_DUPLEX, 1.2, color, 1)
             nine_squares_img = show_fps(nine_squares_img, fps)
+            nine_squares_img = node.showCaculatingTimer(nine_squares_img)
             if node.write_video:
                 out.write(nine_squares_img)
             cv2.imshow(WINDOW_NAME, nine_squares_img)
@@ -196,7 +202,7 @@ def main():
         raise SystemExit('ERROR: file (%s.trt) not found!' % args.model)
 
     #Setup cam
-    args.usb = 2
+    args.usb = 2###Port Here
     cam = Camera(args)
     if not cam.isOpened():
         raise SystemExit('ERROR: failed to open camera!')

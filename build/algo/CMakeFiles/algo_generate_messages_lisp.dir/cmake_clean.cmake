@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/algo_generate_messages_lisp"
   "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg/stringArray.lisp"
+  "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/msg/timeStamp.lisp"
   "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/algo/srv/num_state.lisp"
 )
 

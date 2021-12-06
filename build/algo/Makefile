@@ -183,6 +183,21 @@ algo_generate_messages_py/fast:
 .PHONY : algo_generate_messages_py/fast
 
 # Convenience name for target.
+algo/CMakeFiles/algo_gennodejs.dir/rule:
+	cd /home/nvidia/puzzleArm/build && $(MAKE) -f CMakeFiles/Makefile2 algo/CMakeFiles/algo_gennodejs.dir/rule
+.PHONY : algo/CMakeFiles/algo_gennodejs.dir/rule
+
+# Convenience name for target.
+algo_gennodejs: algo/CMakeFiles/algo_gennodejs.dir/rule
+
+.PHONY : algo_gennodejs
+
+# fast build rule for target.
+algo_gennodejs/fast:
+	cd /home/nvidia/puzzleArm/build && $(MAKE) -f algo/CMakeFiles/algo_gennodejs.dir/build.make algo/CMakeFiles/algo_gennodejs.dir/build
+.PHONY : algo_gennodejs/fast
+
+# Convenience name for target.
 algo/CMakeFiles/algo_generate_messages.dir/rule:
 	cd /home/nvidia/puzzleArm/build && $(MAKE) -f CMakeFiles/Makefile2 algo/CMakeFiles/algo_generate_messages.dir/rule
 .PHONY : algo/CMakeFiles/algo_generate_messages.dir/rule
@@ -288,6 +303,21 @@ std_msgs_generate_messages_eus/fast:
 .PHONY : std_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
+algo/CMakeFiles/_algo_generate_messages_check_deps_timeStamp.dir/rule:
+	cd /home/nvidia/puzzleArm/build && $(MAKE) -f CMakeFiles/Makefile2 algo/CMakeFiles/_algo_generate_messages_check_deps_timeStamp.dir/rule
+.PHONY : algo/CMakeFiles/_algo_generate_messages_check_deps_timeStamp.dir/rule
+
+# Convenience name for target.
+_algo_generate_messages_check_deps_timeStamp: algo/CMakeFiles/_algo_generate_messages_check_deps_timeStamp.dir/rule
+
+.PHONY : _algo_generate_messages_check_deps_timeStamp
+
+# fast build rule for target.
+_algo_generate_messages_check_deps_timeStamp/fast:
+	cd /home/nvidia/puzzleArm/build && $(MAKE) -f algo/CMakeFiles/_algo_generate_messages_check_deps_timeStamp.dir/build.make algo/CMakeFiles/_algo_generate_messages_check_deps_timeStamp.dir/build
+.PHONY : _algo_generate_messages_check_deps_timeStamp/fast
+
+# Convenience name for target.
 algo/CMakeFiles/algo_gencpp.dir/rule:
 	cd /home/nvidia/puzzleArm/build && $(MAKE) -f CMakeFiles/Makefile2 algo/CMakeFiles/algo_gencpp.dir/rule
 .PHONY : algo/CMakeFiles/algo_gencpp.dir/rule
@@ -363,21 +393,6 @@ algo_geneus/fast:
 .PHONY : algo_geneus/fast
 
 # Convenience name for target.
-algo/CMakeFiles/algo_gennodejs.dir/rule:
-	cd /home/nvidia/puzzleArm/build && $(MAKE) -f CMakeFiles/Makefile2 algo/CMakeFiles/algo_gennodejs.dir/rule
-.PHONY : algo/CMakeFiles/algo_gennodejs.dir/rule
-
-# Convenience name for target.
-algo_gennodejs: algo/CMakeFiles/algo_gennodejs.dir/rule
-
-.PHONY : algo_gennodejs
-
-# fast build rule for target.
-algo_gennodejs/fast:
-	cd /home/nvidia/puzzleArm/build && $(MAKE) -f algo/CMakeFiles/algo_gennodejs.dir/build.make algo/CMakeFiles/algo_gennodejs.dir/build
-.PHONY : algo_gennodejs/fast
-
-# Convenience name for target.
 algo/CMakeFiles/algo_generate_messages_lisp.dir/rule:
 	cd /home/nvidia/puzzleArm/build && $(MAKE) -f CMakeFiles/Makefile2 algo/CMakeFiles/algo_generate_messages_lisp.dir/rule
 .PHONY : algo/CMakeFiles/algo_generate_messages_lisp.dir/rule
@@ -450,6 +465,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... algo_generate_messages_py"
+	@echo "... algo_gennodejs"
 	@echo "... algo_generate_messages"
 	@echo "... std_msgs_generate_messages_lisp"
 	@echo "... edit_cache"
@@ -458,12 +474,12 @@ help:
 	@echo "... std_msgs_generate_messages_cpp"
 	@echo "... _algo_generate_messages_check_deps_num_state"
 	@echo "... std_msgs_generate_messages_eus"
+	@echo "... _algo_generate_messages_check_deps_timeStamp"
 	@echo "... algo_gencpp"
 	@echo "... algo_genpy"
 	@echo "... algo_generate_messages_cpp"
 	@echo "... algo_generate_messages_eus"
 	@echo "... algo_geneus"
-	@echo "... algo_gennodejs"
 	@echo "... algo_generate_messages_lisp"
 	@echo "... std_msgs_generate_messages_nodejs"
 	@echo "... algo_generate_messages_nodejs"

@@ -3,5 +3,7 @@
   (:export
    "<STRINGARRAY>"
    "STRINGARRAY"
+   "<TIMESTAMP>"
+   "TIMESTAMP"
   ))
 
