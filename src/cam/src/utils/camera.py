@@ -85,6 +85,30 @@ def open_cam_usb(dev, width, height):
     else:
         return cv2.VideoCapture(dev)
 
+def open_only_cam_usb(dev, width, height):
+    """Open the only USB webcam."""
+    cap = None
+    if USB_GSTREAMER:
+        for i in range(1, 9):
+            gst_str = ('v4l2src device=/dev/video{} ! '
+                   'video/x-raw, width=(int){}, height=(int){} ! '
+                   'videoconvert ! appsink').format(i, width, height)
+            cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
+            if cap.isOpened():
+                return cap
+            else:
+                continue
+        
+        return 
+    else:
+        for i in range(1, 9):
+            cap = cv2.VideoCapture(i)
+            if cap.isOpened():
+                return cap
+            else:
+                continue
+        return None
+
 
 def open_cam_gstr(gstr, width, height):
     """Open camera using a GStreamer string.
@@ -188,7 +212,7 @@ class Camera():
             self._start()
         elif a.usb is not None:
             logging.info('Camera: using USB webcam /dev/video%d' % a.usb)
-            self.cap = open_cam_usb(a.usb, a.width, a.height)
+            self.cap = open_only_cam_usb(a.usb, a.width, a.height)
             self._start()
         elif a.gstr is not None:
             logging.info('Camera: using GStreamer string "%s"' % a.gstr)
