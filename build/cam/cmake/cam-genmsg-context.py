@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg"
+messages_str = "/home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg;/home/nvidia/puzzleArm/src/cam/msg/Stop.msg"
 services_str = "/home/nvidia/puzzleArm/src/cam/srv/goal.srv"
 pkg_name = "cam"
 dependencies_str = "std_msgs"

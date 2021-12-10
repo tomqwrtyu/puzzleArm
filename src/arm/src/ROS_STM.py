@@ -11,6 +11,7 @@ import time
 import rospy
 from rospy import timer 
 from std_msgs.msg import Float64 , String
+from cam.msg import Stop
 from algo.msg import stringArray
 import serial
 import threading
@@ -36,7 +37,7 @@ link2 = 131.0
 link3 = 186.0#186 #take the center of ball as end of axis3
 
 ###need ro adjust in real arm
-up_down_dis = 20.0 #20 #ball surface touch the plate
+up_down_dis = 18.0 #20 #ball surface touch the plate
 above_dis = 40.0 ##distance between ball center and ground
 ###need ro adjust in real arm
 
@@ -66,13 +67,21 @@ now_position = R[1]##11/28
 A = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
 B = [coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
 C = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board , up_down_dis)]
-D = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
-E = [coordinate(0.0 , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
-F = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh+5 , up_down_dis)]
+D = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh , up_down_dis)]
+E = [coordinate(0.0 , dis_ori_plate + half_plate_lengh , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh , up_down_dis)]
+F = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh , up_down_dis)]
 G = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
 H = [coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh + dis_num_board, up_down_dis)]
 I = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh + dis_num_board , up_down_dis)]
 
+cpl = 8#compliment of ABC DEF move
+
+A_sub = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh-cpl - dis_num_board , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board-cpl , up_down_dis)]
+B_sub = [coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board-cpl , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh - dis_num_board-cpl , up_down_dis)]
+C_sub = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board-cpl , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh - dis_num_board-cpl , up_down_dis)]
+D_sub = [coordinate(dis_num_board , dis_ori_plate + half_plate_lengh-cpl , above_dis) , coordinate(dis_num_board , dis_ori_plate + half_plate_lengh-cpl , up_down_dis)]
+E_sub = [coordinate(0.0 , dis_ori_plate + half_plate_lengh-cpl , above_dis) , coordinate(0.0 , dis_ori_plate + half_plate_lengh-cpl , up_down_dis)]
+F_sub = [coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh-cpl , above_dis) , coordinate(-dis_num_board , dis_ori_plate + half_plate_lengh-cpl , up_down_dis)]
 
 def CmdtoByte(NUM):
     NUM_I = int(NUM*1000)
@@ -226,18 +235,24 @@ class armNode():
     def __init__(self):
         self.node = None
         self.sub = None
+        self.sub_stop = None
+        self.stop_flag = False
         self.time_stamp = None
         self.now_executing = None
         
     def start(self):
         self.node = rospy.init_node('Com_STM32_INTERFACE')
         self.sub = rospy.Subscriber('algo_result', stringArray, self.__listenerCallback)
+        self.sub_stop = rospy.Subscriber('stop_flag', Stop, self.__stopFlagCallback)
 
     def __listenerCallback(self, recieved_data):
         self.now_executing = recieved_data.data
         if any(self.now_executing):
             self.now_executing.append('R R')
         self.time_stamp = recieved_data.time_stamp
+
+    def __stopFlagCallback(self, recieved_data):
+        self.stop_flag = recieved_data.flag
 
 ##########################################
 
@@ -269,6 +284,8 @@ if __name__ == '__main__' :
                    continue
                 #print(node.now_executing)
                 for command in node.now_executing:
+                    #if node.stop_flag:
+                    #    command = 'R R'
                     read_in = command.split(' ')
 
                     if read_in[0] == 'A' :
@@ -358,11 +375,33 @@ if __name__ == '__main__' :
                     else: 
                         sys.exit("improper input")
 
+                    if read_in[0] == 'A' and read_in[1] == 'B':
+                        position[2] = B_sub[1]
+                        position[3] = B[0]
+                    if read_in[0] == 'B' and read_in[1] == 'A':
+                        position[2] = A_sub[1]
+                        position[3] = A[0]
+                    if read_in[0] == 'A' and read_in[1] == 'C':
+                        position[2] = C_sub[1]
+                        position[3] = C[0]
+                    if read_in[0] == 'C' and read_in[1] == 'A':
+                        position[2] = A_sub[1]
+                        position[3] = A[0]
+                    if read_in[0] == 'F' and read_in[1] == 'E':
+                        position[2] = E_sub[1]
+                        position[3] = E[0]
+                    if read_in[0] == 'E' and read_in[1] == 'F':
+                        position[2] = F_sub[1]
+                        position[3] = F[0]
+                    if read_in[0] == 'D' and read_in[1] == 'E':
+                        position[2] = E_sub[1]
+                        position[3] = E[0]
+                    if read_in[0] == 'E' and read_in[1] == 'D':
+                        position[2] = D_sub[1]
+                        position[3] = D[0]
+
 
                         #print(x_difference,y_difference,z_difference) 
-
-                    
-                    
                     
                     xi = now_position.x
                     yi = now_position.y
@@ -522,17 +561,19 @@ if __name__ == '__main__' :
                             sys.exit("error")
 
                         j+=1
+                    #if command == 'R R':
+                    #    break
                     
                     now_position = position[3]
                     print 'now position:',read_in[1]
                     process_time+=1
                     print 'the program has run ',process_time,' times'
 
-		time.sleep(0.1)
+		#time.sleep(0.1)
         
-            Stop_flag = 0
-            STM_1P.close()
-            STM_23.close()   
+        Stop_flag = 0
+        STM_1P.close()
+        STM_23.close()   
             
     except: 
         print('STM connection failed')

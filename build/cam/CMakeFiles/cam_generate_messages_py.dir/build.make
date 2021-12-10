@@ -53,35 +53,44 @@ CMAKE_BINARY_DIR = /home/nvidia/puzzleArm/build
 # Include the progress variables for this target.
 include cam/CMakeFiles/cam_generate_messages_py.dir/progress.make
 
+cam/CMakeFiles/cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py
 cam/CMakeFiles/cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py
 cam/CMakeFiles/cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py
 cam/CMakeFiles/cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py
 cam/CMakeFiles/cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/__init__.py
 
 
+/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
+/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py: /home/nvidia/puzzleArm/src/cam/msg/Stop.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG cam/Stop"
+	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/nvidia/puzzleArm/src/cam/msg/Stop.msg -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg
+
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py: /home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG cam/UIntArray"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python from MSG cam/UIntArray"
 	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/nvidia/puzzleArm/src/cam/msg/UIntArray.msg -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg
 
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py: /opt/ros/melodic/lib/genpy/gensrv_py.py
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py: /home/nvidia/puzzleArm/src/cam/srv/goal.srv
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python code from SRV cam/goal"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python code from SRV cam/goal"
 	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/gensrv_py.py /home/nvidia/puzzleArm/src/cam/srv/goal.srv -Icam:/home/nvidia/puzzleArm/src/cam/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p cam -o /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv
 
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
+/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python msg __init__.py for cam"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating Python msg __init__.py for cam"
 	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg --initpy
 
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/__init__.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
+/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/__init__.py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/__init__.py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py
 /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/__init__.py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating Python srv __init__.py for cam"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/nvidia/puzzleArm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Generating Python srv __init__.py for cam"
 	cd /home/nvidia/puzzleArm/build/cam && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv --initpy
 
 cam_generate_messages_py: cam/CMakeFiles/cam_generate_messages_py
+cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py
 cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py
 cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py
 cam_generate_messages_py: /home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py

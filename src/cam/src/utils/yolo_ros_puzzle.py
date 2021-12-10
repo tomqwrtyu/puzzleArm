@@ -1,7 +1,7 @@
 import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
-from cam.msg import UIntArray
+from cam.msg import UIntArray, Stop
 from cam.srv import *
 from algo.msg import timeStamp
 
@@ -18,6 +18,7 @@ class camNode():#For ROS node establish and publish
     def __init__(self):
         self.node = None
         self.pub = None
+        self.pub_stop = None 
         self.sub = None
         self.write_video = None
         self.is_initialized = False
@@ -217,8 +218,14 @@ class camNode():#For ROS node establish and publish
     def start(self):
         self.node = rospy.init_node('cam_node')
         self.pub = rospy.Publisher('cam_detected', UIntArray, queue_size=10)
+        self.pub_stop = rospy.Publisher('stop_flag', Stop, queue_size=10)
         self.sub = rospy.Subscriber('caculating_timer', timeStamp, self.__listenerCallback)
         #service = rospy.Service('GetTheGoal', goal, self.__request_handler)
+
+    def stop_algo_and_arm(self, flag):
+        stop_flag = Stop()
+        stop_flag.flag = flag
+        self.pub_stop.publish(stop_flag)
 
     def showCaculatingTimer(self, img):
         if self.last_time_stamp and (time.time() - self.last_time_stamp > 1):
@@ -237,9 +244,9 @@ class camNode():#For ROS node establish and publish
 
     def toPublishFormat(self,detected_list):
         return self.__debugging(detected_list)
-        self.pub.publish(pub_message)
-        ret = [str(data) for data in pub_message.data]
-        return ret
+        #self.pub.publish(pub_message)
+        #ret = [str(data) for data in pub_message.data]
+        #return ret
 
 
 

@@ -39,7 +39,7 @@ def parse_args():
         '-c', '--category_num', type=int, default=9,
         help='number of object categories [9]')
     parser.add_argument(
-        '-m', '--model', type=str, default='yolov4-tiny_78_0914',
+        '-m', '--model', type=str, default='yolov4-tiny_78',
         help=('[yolov3-tiny|yolov3|yolov3-spp|yolov4-tiny|yolov4|'
               'yolov4-csp|yolov4x-mish]-[{dimension}], where '
               '{dimension} could be either a single number (e.g. '
@@ -72,7 +72,9 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
     fps = 0.0
     tic = time.time()
     tkBlock = tk.Tk()
-    publishButton = 0 #
+    stop_flag = False
+    flag_during_time = None
+    publishButton = 0 
 
     #Setup opencv video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -140,6 +142,7 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             fps = curr_fps if fps == 0.0 else (fps*0.95 + curr_fps*0.05)
             tic = toc
             key = cv2.waitKey(1)
+            
             if key == ord('P') or key == ord('p'): 
                 if publishButton:
                     publishButton = 0
@@ -150,12 +153,22 @@ def loop_and_detect(node, cam, trt_yolo, cls_dict, conf_th, vis):
             elif key == ord('F') or key == ord('f'):  #Toggle fullscreen
                 full_scrn = not full_scrn
                 set_display(WINDOW_NAME, full_scrn)
-            elif key == ord('R') or key == ord('r'):  #Reinitialize plate position (!!!Not sure if the messagebox working!!!)
+            elif key == ord('R') or key == ord('r'):  #Reinitialize plate position 
                 tkBlock.withdraw()
                 answer = askyesno(title = 'Warning!',
                                   message = 'Are you sure that you want to reset?')
                 if answer:
                     node.reset()
+            elif key == ord('S') or key == ord('s'):  #Stop A star and put arm to origin 
+                tkBlock.withdraw()
+                stop_flag = askyesno(title = 'Warning!',
+                                  message = 'Force stop sloving puzzle?')
+                publishButton = 0
+                flag_during_time = time.time()
+            if stop_flag == True and (time.time() - flag_during_time > 2):
+                stop_flag = False
+            node.stop_algo_and_arm(stop_flag)
+                
                 
     out.release()
      
@@ -202,7 +215,7 @@ def main():
         raise SystemExit('ERROR: file (%s.trt) not found!' % args.model)
 
     #Setup cam
-    args.usb = 1###Port Here
+    args.usb = True###Port Here
     cam = Camera(args)
     if not cam.isOpened():
         raise SystemExit('ERROR: failed to open camera!')

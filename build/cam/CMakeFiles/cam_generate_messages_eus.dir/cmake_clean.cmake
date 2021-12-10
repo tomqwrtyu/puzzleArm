@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_eus"
+  "/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg/Stop.l"
   "/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/msg/UIntArray.l"
   "/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/srv/goal.l"
   "/home/nvidia/puzzleArm/devel/share/roseus/ros/cam/manifest.l"

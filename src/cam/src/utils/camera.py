@@ -229,7 +229,7 @@ class Camera():
         return self.is_opened
 
     def _start(self):
-        if not self.cap.isOpened():
+        if not self.cap or not self.cap.isOpened():
             logging.warning('Camera: starting while cap is not opened!')
             return
 

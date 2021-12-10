@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_nodejs"
+  "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg/Stop.js"
   "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/msg/UIntArray.js"
   "/home/nvidia/puzzleArm/devel/share/gennodejs/ros/cam/srv/goal.js"
 )

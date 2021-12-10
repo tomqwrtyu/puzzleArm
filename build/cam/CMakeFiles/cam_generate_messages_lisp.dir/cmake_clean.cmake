@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_lisp"
+  "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/cam/msg/Stop.lisp"
   "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/cam/msg/UIntArray.lisp"
   "/home/nvidia/puzzleArm/devel/share/common-lisp/ros/cam/srv/goal.lisp"
 )

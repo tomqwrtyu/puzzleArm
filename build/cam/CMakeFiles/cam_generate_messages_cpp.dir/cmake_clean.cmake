@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_cpp"
+  "/home/nvidia/puzzleArm/devel/include/cam/Stop.h"
   "/home/nvidia/puzzleArm/devel/include/cam/UIntArray.h"
   "/home/nvidia/puzzleArm/devel/include/cam/goal.h"
 )

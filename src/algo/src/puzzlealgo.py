@@ -10,7 +10,7 @@ import time
 import rospy
 from algo.msg import stringArray
 from algo.msg import timeStamp
-from cam.msg import UIntArray
+from cam.msg import UIntArray, Stop
 from cam.srv import *
                
 CAPITAL_CONSTANT = 65
@@ -72,10 +72,11 @@ class Node(object):
 
 class PuzzleSearch(object):
 
-    def __init__(self, start, goal):
+    def __init__(self, start, goal, ros_node):
         self.start = start
         self.goal = goal
         self.nodes = []
+        self.ros_node = ros_node
 
 
     def _position_by_value(self, node, value):
@@ -166,6 +167,9 @@ class PuzzleSearch(object):
 
     def _heuristic_manhatten(self, node, goal):
         ret = 0
+        if self.ros_node.stop_flag:
+            self.ros_node.publish([])
+            return None
         try:
             for i in node:
                 # exclude None
@@ -228,6 +232,8 @@ class algoNode():
         self.pub = None
         self.pub_time = None
         self.sub = None
+        self.sub_stop = None
+        self.stop_flag = False
         self.start_cond = None
         self.goal_cond = None
         self.blank_space = None
@@ -239,6 +245,7 @@ class algoNode():
         self.pub = rospy.Publisher('algo_result', stringArray, queue_size=10)
         self.pub_time = rospy.Publisher('caculating_timer', timeStamp, queue_size=10)
         self.sub = rospy.Subscriber('cam_detected', UIntArray, self.__listenerCallback)
+        self.sub_stop = rospy.Subscriber('stop_flag', Stop, self.__stopFlagCallback)
         
     def __goal_determine(self, start_cond):
         if start_cond == None:
@@ -260,6 +267,9 @@ class algoNode():
             else:
                 goal[i] = i + 1
         return goal
+
+    def get_cond(self):
+        return self.start_cond, self.goal_cond
         
     def publish(self, actions):
         pub_data =  stringArray() 
@@ -290,6 +300,9 @@ class algoNode():
         self.start_cond = recieved_data_list
         self.goal_cond = self.__goal_determine(recieved_data_list)
         self.time_stamp = recieved_data.time_stamp
+
+    def __stopFlagCallback(self, recieved_data):
+        self.stop_flag = recieved_data.flag
         
     def __transferOutput(self, actions):
         start = None
@@ -332,13 +345,14 @@ def main():
         if (ros_node.start_cond == None \
             or ros_node.goal_cond == None):
             continue
-        puzzle = PuzzleSearch(Node(ros_node.start_cond), Node(ros_node.goal_cond))
+        start_cond, goal_cond = ros_node.get_cond()
+        puzzle = PuzzleSearch(Node(start_cond), Node(goal_cond), ros_node)
         #print(puzzle.start, puzzle.goal)
         
         # getattr to get fuction value
         func = getattr(puzzle, 'astar')
         res = func()
-        if res == None and any(puzzle.start):
+        if res == None and not puzzle.start == None:
             ros_node.start_cond = None
             continue
      

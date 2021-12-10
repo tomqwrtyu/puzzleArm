@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cam_generate_messages_py"
+  "/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_Stop.py"
   "/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/_UIntArray.py"
   "/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/srv/_goal.py"
   "/home/nvidia/puzzleArm/devel/lib/python2.7/dist-packages/cam/msg/__init__.py"
