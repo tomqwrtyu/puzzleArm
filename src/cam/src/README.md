@@ -1,4 +1,4 @@
-# tensorrt_demos owned by jkjung-avt.github.io/
+# tensorrt_demos owned by (https://github.com/jkjung-avt)
 
 Examples demonstrating how to optimize Caffe/TensorFlow/DarkNet/PyTorch models with TensorRT and do inference on NVIDIA Jetson or x86_64 platforms.  Highlights:
 
